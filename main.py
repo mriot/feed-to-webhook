@@ -16,8 +16,8 @@ def fx_twitter_url(link):
 
 
 def main():
-    for feed in config['feeds']:
-        response = requests.get(feed['url'], headers={"User-Agent": "Hi, I am a bot!"})
+    for feed in config["feeds"]:
+        response = requests.get(feed["url"], headers={"User-Agent": "Hi, I am a bot!"})
 
         if (response.status_code == 200):
             root = ET.fromstring(response.content.decode("utf-8"))
@@ -37,7 +37,7 @@ def main():
             if feed.get("is_twitter_feed"):
                 link = fx_twitter_url(link)
 
-            requests.post(feed['webhook'], {"content": link})
+            requests.post(feed["webhook"], {"content": link})
         else:
             requests.post(config["debug"]["webhook"], {
                 "content": f"Error {str(response.status_code)} while fetching feed {feed['url']}"
