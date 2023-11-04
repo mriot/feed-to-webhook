@@ -5,7 +5,8 @@ It's meant to run on a Raspberry Pi and get triggered by a cronjob.
 
 ## Config
 
-Specify the feeds you want to subscribe to along with a webhook url in the [config.json](./config.json) file.  
+Specify the feeds you want to subscribe to along with a webhook url in the [config.json](./config_template.json) file.  
+Make sure to rename `config_template.json` to `config.json`.  
 Additionally you can provide a webhook that gets called if a feed could not be loaded.
 
 The script will edit the config file to store the last post date for each feed so it knows if something new was posted since the last update.
