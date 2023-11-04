@@ -13,7 +13,7 @@ The script will edit the config file to store the last post date for each feed s
 
 ### Twitter Feeds
 
-Some platforms, like Discord or Telefram, don't show previews for Twitter links. But there's a cool service called [FixTweet](https://github.com/FixTweet/FixTweet) that can help with that.
+Some platforms, like Discord or Telegram, don't show previews for Twitter links. But there's a cool service called [FixTweet](https://github.com/FixTweet/FixTweet) that can help with that.
 
 Add `is_twitter_feed: true` to the feed config to activate this feature.
 
