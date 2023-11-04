@@ -15,29 +15,33 @@ def fx_twitter_url(link):
     return fixed_url
 
 
-for index, feed in enumerate(config['feeds']):
-    response = requests.get(feed['url'], headers={"User-Agent": "Hi, I am a bot!"})
+def main():
+    for index, feed in enumerate(config['feeds']):
+        response = requests.get(feed['url'], headers={"User-Agent": "Hi, I am a bot!"})
 
-    if (response.status_code == 200):
-        root = ET.fromstring(response.content.decode("utf-8"))
-        items = root.findall("channel/item")
+        if (response.status_code == 200):
+            root = ET.fromstring(response.content.decode("utf-8"))
+            items = root.findall("channel/item")
 
-        last_item_date = feed.get("last_item_date")
-        if last_item_date and last_item_date == items[0].find("pubDate").text:
-            continue
+            last_item_date = feed.get("last_item_date")
+            if last_item_date and last_item_date == items[0].find("pubDate").text:
+                continue
 
-        feed["last_item_date"] = items[0].find("pubDate").text
+            feed["last_item_date"] = items[0].find("pubDate").text
 
-        with open("config.json", "w") as f:
-            json.dump(config, f, indent=2)
+            with open("config.json", "w") as f:
+                json.dump(config, f, indent=2)
 
-        link = items[0].find("link").text
+            link = items[0].find("link").text
 
-        if feed["is_twitter_feed"]:
-            link = fx_twitter_url(link)
+            if feed.get("is_twitter_feed"):
+                link = fx_twitter_url(link)
 
-        requests.post(feed['webhook'], {"content": link})
-    else:
-        requests.post(config["debug"]["webhook"], {
-            "content": f"Error {str(response.status_code)} while fetching feed {feed['url']}"
-        })
+            requests.post(feed['webhook'], {"content": link})
+        else:
+            requests.post(config["debug"]["webhook"], {
+                "content": f"Error {str(response.status_code)} while fetching feed {feed['url']}"
+            })
+
+if __name__ == "__main__":
+    main()
