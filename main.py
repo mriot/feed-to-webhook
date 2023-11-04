@@ -1,11 +1,8 @@
 import requests
 import json
+import os
 from urllib.parse import urlparse, urlunparse
 import xml.etree.ElementTree as ET
-
-
-with open("config.json", "r") as f:
-    config = json.load(f)
 
 
 def fx_twitter_url(link):
@@ -16,6 +13,12 @@ def fx_twitter_url(link):
 
 
 def main():
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(script_dir, "config.json")
+
+    with open(config_path, "r") as f:
+        config = json.load(f)
+
     for feed in config["feeds"]:
         response = requests.get(feed["url"], headers={"User-Agent": "Hi, I am a bot!"})
 
