@@ -16,7 +16,7 @@ def fx_twitter_url(link):
 
 
 def main():
-    for index, feed in enumerate(config['feeds']):
+    for feed in config['feeds']:
         response = requests.get(feed['url'], headers={"User-Agent": "Hi, I am a bot!"})
 
         if (response.status_code == 200):
