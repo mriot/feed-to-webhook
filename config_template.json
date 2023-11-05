@@ -12,6 +12,7 @@
     }
   ],
   "debug": {
+    "force_post": false,
     "webhook": "https://discord.com/api/webhooks/0123456789/f296-abcdefghijklmnopqrstuvwxyz"
   }
 }

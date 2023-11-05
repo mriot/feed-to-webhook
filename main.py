@@ -27,7 +27,7 @@ def main():
             items = root.findall("channel/item")
 
             last_item_date = feed.get("last_item_date")
-            if last_item_date and last_item_date == items[0].find("pubDate").text:
+            if last_item_date and last_item_date == items[0].find("pubDate").text and not config["debug"]["force_post"]:
                 continue
 
             feed["last_item_date"] = items[0].find("pubDate").text
