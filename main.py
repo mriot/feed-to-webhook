@@ -26,7 +26,6 @@ def main():
             root = ET.fromstring(response.content.decode("utf-8"))
             items = root.findall("channel/item")
             post_url = items[0].find("link").text
-            is_retweet = feed_owner.find(post_author) == -1
 
             feed_owner = root.find("channel/title").text # username / @username
             feed_owner_accountname = feed_owner.split(" / ")[-1] # @username
@@ -34,6 +33,8 @@ def main():
 
             post_author = items[0].find("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"}).text # @username
             post_author_link = "https://twitter.com/" + post_author.replace("@", "")
+            
+            is_retweet = feed_owner.find(post_author) == -1
             
             last_item_date = feed.get("last_item_date")
             if last_item_date and last_item_date == items[0].find("pubDate").text and not config["debug"]["force_post"]:
