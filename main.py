@@ -32,7 +32,7 @@ def main():
 
             feed["last_item_date"] = items[0].find("pubDate").text
 
-            with open("config.json", "w") as f:
+            with open(config_path, "w") as f:
                 json.dump(config, f, indent=2)
 
             link = items[0].find("link").text
