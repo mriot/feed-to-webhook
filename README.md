@@ -25,3 +25,7 @@ Since Twitter.com doesn't offer (free) RSS feeds, you could use a community-run 
 
 These public nitter instances shouldn't be used for scraping, as mentioned here <https://status.d420.de/about#api>.  
 If you plan to use this script on a larger scale, you might want to think about hosting your own nitter instance.
+
+## Todo
+
+- improve file handling (only open and write once)
