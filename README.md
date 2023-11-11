@@ -28,4 +28,5 @@ If you plan to use this script on a larger scale, you might want to think about 
 
 ## Todo / Ideas
 
+- add error handling for posting to webhooks
 - "max post history" config setting (how many posts are made max)
