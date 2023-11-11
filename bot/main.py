@@ -3,7 +3,6 @@ import yaml
 import requests
 from twitter_feed import twitter_feed
 from rss_feed import rss_feed
-from discord_embed import discord_embed
 
 
 def main():
