@@ -22,12 +22,12 @@ def main():
             config["twitter_feeds"][i]["last_item_date"] = result["last_item_date"]
 
     # rss
-    # for i, rfeed in enumerate(config["rss_feeds"]):
-    #     result = rss_feed(rfeed)  # return error or last item date
-    #     if (result.get("error")):
-    #         requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching rss feed {rfeed['url']}"})
-    #     else:
-    #         config["rss_feeds"][i]["last_item_date"] = result["last_item_date"]
+    for i, rfeed in enumerate(config["rss_feeds"]):
+        result = rss_feed(rfeed)  # return error or last item date
+        if (result.get("error")):
+            requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching rss feed {rfeed['url']}"})
+        else:
+            config["rss_feeds"][i]["last_item_date"] = result["last_item_date"]
 
     # override config file
     config_file.seek(0)
