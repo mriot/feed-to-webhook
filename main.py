@@ -1,63 +1,41 @@
-import requests
-import json
 import os
-from urllib.parse import urlparse, urlunparse
-import xml.etree.ElementTree as ET
-
-
-def fx_twitter_url(link):
-    parsed_url = urlparse(link)
-    modified_url = parsed_url._replace(netloc="fxtwitter.com")
-    fixed_url = urlunparse(modified_url)
-    return fixed_url
+import yaml
+import requests
+from twitter_feed import twitter_feed
+from rss_feed import rss_feed
+from discord_embed import discord_embed
 
 
 def main():
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(script_dir, "config.json")
+    config_path = os.path.join(script_dir, "config.yaml")
 
-    with open(config_path, "r") as f:
-        config = json.load(f)
+    config_file = open(config_path, "r+")
+    config = yaml.safe_load(config_file)
 
-    for feed in config["feeds"]:
-        response = requests.get(feed["url"], headers={"User-Agent": "Hi, I am a bot!"})
-
-        if (response.status_code == 200):
-            root = ET.fromstring(response.content.decode("utf-8"))
-            items = root.findall("channel/item")
-            post_url = items[0].find("link").text
-
-            feed_owner = root.find("channel/title").text # username / @username
-            feed_owner_accountname = feed_owner.split(" / ")[-1] # @username
-            feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
-
-            post_author = items[0].find("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"}).text # @username
-            post_author_link = "https://twitter.com/" + post_author.replace("@", "")
-            
-            is_retweet = feed_owner.find(post_author) == -1
-            
-            last_item_date = feed.get("last_item_date")
-            if last_item_date and last_item_date == items[0].find("pubDate").text and not config["debug"]["force_post"]:
-                continue
-
-            feed["last_item_date"] = items[0].find("pubDate").text
-
-            with open(config_path, "w") as f:
-                json.dump(config, f, indent=2)
-
-            if feed.get("is_twitter_feed"):
-                post_url = fx_twitter_url(post_url)
-
-            if is_retweet:
-                output = f"♻️ [{feed_owner_accountname}]({feed_owner_link}) retweeted [{post_author}]({post_author_link})\n{post_url}"
-            else:
-                output = f"📢 [{feed_owner_accountname}]({feed_owner_link}) tweeted \n{post_url}"
-
-            requests.post(feed["webhook"], {"content": output})
+    # twitter
+    for i, tfeed in enumerate(config["twitter_feeds"]):
+        result = twitter_feed(tfeed)  # return error or last item date
+        if (result.get("error")):
+            requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching twitter feed {tfeed['url']}"})
         else:
-            requests.post(config["debug"]["webhook"], {
-                "content": f"Error {str(response.status_code)} while fetching feed {feed['url']}"
-            })
+            config["twitter_feeds"][i]["last_item_date"] = result["last_item_date"]
+
+    # rss
+    # for i, rfeed in enumerate(config["rss_feeds"]):
+    #     result = rss_feed(rfeed)  # return error or last item date
+    #     if (result.get("error")):
+    #         requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching rss feed {rfeed['url']}"})
+    #     else:
+    #         config["rss_feeds"][i]["last_item_date"] = result["last_item_date"]
+
+    # override config file
+    config_file.seek(0)
+    config_file.truncate()
+    yaml.safe_dump(config, config_file, sort_keys=False)
+
+    config_file.close()
+
 
 if __name__ == "__main__":
     main()

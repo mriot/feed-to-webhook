@@ -1,13 +1,7 @@
-import os
-import yaml
 import requests
-from datetime import datetime, timedelta
-from urllib.parse import urlparse, urlunparse
+from datetime import datetime
 import xml.etree.ElementTree as ET
-
-
-def discord_embed(feed):
-    pass
+from urllib.parse import urlparse, urlunparse
 
 
 def twitter_feed(feed):
@@ -56,40 +50,3 @@ def twitter_feed(feed):
             requests.post(webhook, {"content": output})
 
     return {"last_item_date": items[0].find("pubDate").text}  # we assume that the first item is the newest one
-
-
-def rss_feed(feeds, config_file):
-    pass
-
-
-def main():
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(script_dir, "config.yaml")
-
-    config_file = open(config_path, "r+")
-    config = yaml.safe_load(config_file)
-
-    for i, tfeed in enumerate(config["twitter_feeds"]):
-        result = twitter_feed(tfeed)  # return error or last item date
-        if (result.get("error")):
-            requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching twitter feed {tfeed['url']}"})
-        else:
-            config["twitter_feeds"][i]["last_item_date"] = result["last_item_date"]
-
-    # for rfeed in config["twitter_feeds"]:
-    #     if (result.get("error")):
-    #         requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching rss feed {tfeed['url']}"})
-    #     else:
-    #         # todo update config
-    #         pass
-
-    # todo make this nicer
-    config_file.seek(0)
-    config_file.truncate()
-    yaml.safe_dump(config, config_file, sort_keys=False)
-
-    config_file.close()
-
-
-if __name__ == "__main__":
-    main()
