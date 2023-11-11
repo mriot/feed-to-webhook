@@ -23,18 +23,18 @@ def twitter_feed(feed):
     feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
     feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
 
-    # TODO
+    # first run of script only gets the newest item date and returns it
     if feed.get("last_item_date") == None:
         return {"last_item_date": items[0].find("pubDate").text}
 
-    last_item_date = datetime.strptime(feed.get("last_item_date").replace('GMT', '+0000'), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
+    # get last item date from config for comparison
+    last_item_date = datetime.strptime(feed.get("last_item_date").replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
 
-    for i, item in enumerate(items):
-        if i == 3:
-            break
-
-        item_date = datetime.strptime(item.find("pubDate").text.replace('GMT', '+0000'), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
-        if item_date < last_item_date:  # item date is older than last item date
+    # loop through items in feed in reverse order (older first)
+    for i, item in enumerate(reversed(items[:5])):
+        item_date = datetime.strptime(item.find("pubDate").text.replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
+        # a more recent date is considered _greater_ than an older date
+        if item_date <= last_item_date:
             continue
 
         post_author = items[i].find("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"}).text  # @username
@@ -55,7 +55,7 @@ def twitter_feed(feed):
         for webhook in feed["webhooks"]:
             requests.post(webhook, {"content": output})
 
-    return {"last_item_date": items[0].find("pubDate").text}  # todo item 0 might not be the newest item
+    return {"last_item_date": items[0].find("pubDate").text}  # we assume that the first item is the newest one
 
 
 def rss_feed(feeds, config_file):
@@ -86,7 +86,7 @@ def main():
     # todo make this nicer
     config_file.seek(0)
     config_file.truncate()
-    yaml.dump(config, config_file)
+    yaml.safe_dump(config, config_file, sort_keys=False)
 
     config_file.close()
 
