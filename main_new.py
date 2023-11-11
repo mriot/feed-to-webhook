@@ -6,11 +6,8 @@ from urllib.parse import urlparse, urlunparse
 import xml.etree.ElementTree as ET
 
 
-def fxify_twitter_url(link):
-    parsed_url = urlparse(link)
-    modified_url = parsed_url._replace(netloc="fxtwitter.com")
-    fixed_url = urlunparse(modified_url)
-    return fixed_url
+def discord_embed(feed):
+    pass
 
 
 def twitter_feed(feed):
@@ -79,16 +76,17 @@ def main():
         else:
             config["twitter_feeds"][i]["last_item_date"] = result["last_item_date"]
 
-    config_file.seek(0)
-    config_file.truncate()
-    yaml.dump(config, config_file)
-
     # for rfeed in config["twitter_feeds"]:
     #     if (result.get("error")):
     #         requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching rss feed {tfeed['url']}"})
     #     else:
     #         # todo update config
     #         pass
+
+    # todo make this nicer
+    config_file.seek(0)
+    config_file.truncate()
+    yaml.dump(config, config_file)
 
     config_file.close()
 
