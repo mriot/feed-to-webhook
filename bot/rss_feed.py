@@ -27,16 +27,16 @@ def rss_feed(feed):
     last_item_date = datetime.strptime(feed.get("last_item_date").replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")
 
     # loop through items in feed in reverse order (older first)
-    for i, item in enumerate(reversed(items[:5])):
+    for item in reversed(items[:5]):
         item_date = datetime.strptime(item.find("pubDate").text.replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
         # a more recent date is considered _greater_ than an older date
         if item_date <= last_item_date:
             continue
 
-        post_title = items[i].find("title").text
-        post_url = items[i].find("link").text
-        post_description = items[i].find("description").text
-        enclosure = items[i].find("enclosure").get("url") if items[i].find("enclosure") != None else ""
+        post_title = item.find("title").text
+        post_url = item.find("link").text
+        post_description = item.find("description").text
+        enclosure = item.find("enclosure").get("url") if item.find("enclosure") != None else ""
 
         output = discord_embed(post_title, post_url, post_description, enclosure)
 
