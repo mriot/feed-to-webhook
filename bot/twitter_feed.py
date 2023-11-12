@@ -42,9 +42,9 @@ def twitter_feed(feed):
         post_url = urlunparse(urlparse(post_url)._replace(netloc="fxtwitter.com"))
 
         if is_retweet:
-            output = f"♻️ [{feed_owner_accountname}]({feed_owner_link}) retweeted [{post_author}]({post_author_link})\n{post_url}"
+            output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
         else:
-            output = f"📢 [{feed_owner_accountname}]({feed_owner_link}) tweeted \n{post_url}"
+            output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url}"
 
         for webhook in feed["webhooks"]:
             requests.post(webhook, {"content": output})
