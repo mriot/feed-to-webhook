@@ -3,6 +3,8 @@
 A simple script that fetches RSS feeds and sends their content to webhooks.  
 It's meant to run on a Raspberry Pi and get activated by a cronjob.
 
+>📌 On the first run, the script will not post anything. It retrieves the latest item from the feed and then starts monitoring for new posts.
+
 ## Config
 
 Specify the feeds you want to subscribe to along with a webhook url in `config.yaml`.  
