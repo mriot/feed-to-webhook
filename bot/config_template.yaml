@@ -1,0 +1,14 @@
+rss_feeds:
+  - url: https://example.com/rss.xml
+    webhooks:
+      - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
+    embed_color: fe0000
+
+twitter_feeds:
+  - url: https://nitter.example.com/some_user/rss
+    webhooks:
+      - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
+      - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
+    include_retweets: true
+
+error_webhook: https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
