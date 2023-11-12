@@ -31,9 +31,9 @@ def twitter_feed(feed):
         if item_date <= last_item_date:
             continue
 
-        post_author = items[i].find("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"}).text  # @username
+        post_author = item.find("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"}).text  # @username
         post_author_link = "https://twitter.com/" + post_author.replace("@", "")
-        post_url = items[i].find("link").text
+        post_url = item.find("link").text
         is_retweet = feed_owner.find(post_author) == -1
 
         if is_retweet and feed["include_retweets"] == False:
