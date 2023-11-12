@@ -1,6 +1,6 @@
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse, urlunparse
 from discord_embed import discord_embed
@@ -33,14 +33,21 @@ def rss_feed(feed):
         if item_date <= last_item_date:
             continue
 
-        post_title = item.find("title").text
-        post_url = item.find("link").text
-        post_description = item.find("description").text
-        enclosure = item.find("enclosure").get("url") if item.find("enclosure") != None else ""
+        data = {
+            "feed_owner": feed_owner,
+            "feed_description": feed_description,
+            "feed_owner_link": feed_owner_link,
+            "post_title": item.find("title").text,
+            "post_url": item.find("link").text,
+            "post_description": item.find("description").text,
+            "post_date": item_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            "enclosure": item.find("enclosure").get("url") if item.find("enclosure") != None else "",
+            "color": int(feed.get("embed_color", "0"), 16)
+        }
 
-        output = discord_embed(post_title, post_url, post_description, enclosure)
+        output = discord_embed(data)
 
-        for webhook in feed["webhooks"]:
+        for webhook in feed.get("webhooks", []):
             requests.post(webhook, json={"embeds": output})
 
     return {"last_item_date": items[0].find("pubDate").text}  # we assume that the first item is the newest one
