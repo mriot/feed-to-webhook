@@ -10,7 +10,7 @@ It's meant to run on a Raspberry Pi and get activated by a cronjob.
 Specify the feeds you want to subscribe to along with a webhook url in `config.yaml`.  
 Additionally you can provide an error webhook that gets called if a feed could not be loaded.  
 
-> ❗ Make sure to place `config.yaml` in the `bot/` directory.
+> ❗ Make sure to place `config.yaml` in the `src/` directory.
 
 ``` yaml
 rss_feeds:
