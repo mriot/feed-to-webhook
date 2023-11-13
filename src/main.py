@@ -11,10 +11,17 @@ def main():
     feed_ts_path = os.path.join(script_dir, "feed_timestamps.yaml")
     new_feed_timestamps = {}
 
-    with open(config_path, "r") as config_file:
-        config = yaml.safe_load(config_file)
+    # load config
+    try:
+        with open(config_path, "r") as config_file:
+            config = yaml.safe_load(config_file)
+    except FileNotFoundError:
+        print("ERROR: config.yaml not found. Program will exit.")
+        return 1
 
-    with open(feed_ts_path, "r") as timestamp_file:
+    # load timestamps
+    with open(feed_ts_path, "a+") as timestamp_file:
+        timestamp_file.seek(0)
         prev_feed_timestamps = yaml.safe_load(timestamp_file) or {}
 
     # twitter
