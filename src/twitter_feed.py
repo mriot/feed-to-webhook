@@ -4,11 +4,11 @@ import xml.etree.ElementTree as ET
 from urllib.parse import urlparse, urlunparse
 
 
-def twitter_feed(feed):
+def twitter_feed(feed, last_item_date):
     response = requests.get(feed["url"], headers={"User-Agent": "Hi, I am a bot!"})
 
     if (response.status_code != 200):
-        return {"error": response.status_code}
+        return {"error": response.status_code, "last_item_date": last_item_date}
 
     root = ET.fromstring(response.content.decode("utf-8"))
     items = root.findall("channel/item")
@@ -18,11 +18,11 @@ def twitter_feed(feed):
     feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
 
     # first run of script only gets the newest item date and returns it
-    if feed.get("last_item_date") == None:
+    if last_item_date == None:
         return {"last_item_date": items[0].find("pubDate").text}
 
     # get last item date from config for comparison
-    last_item_date = datetime.strptime(feed.get("last_item_date").replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
+    last_item_date = datetime.strptime(last_item_date.replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
 
     # loop through items in feed in reverse order (older first)
     for item in reversed(items[:5]):

@@ -6,11 +6,11 @@ from urllib.parse import urlparse, urlunparse
 from discord_embed import discord_embed
 
 
-def rss_feed(feed):
+def rss_feed(feed, last_item_date):
     response = requests.get(feed["url"], headers={"User-Agent": "Hi, I am a bot!"})
 
     if (response.status_code != 200):
-        return {"error": response.status_code}
+        return {"error": response.status_code, "last_item_date": last_item_date}
 
     root = ET.fromstring(response.content.decode("utf-8"))
     items = root.findall("channel/item")
@@ -20,11 +20,11 @@ def rss_feed(feed):
     feed_owner_link = root.find("channel/link").text
 
     # first run of script only gets the newest item date and returns it
-    if feed.get("last_item_date") == None:
+    if last_item_date == None:
         return {"last_item_date": items[0].find("pubDate").text}
 
     # get last item date from config for comparison
-    last_item_date = datetime.strptime(feed.get("last_item_date").replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")
+    last_item_date = datetime.strptime(last_item_date.replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")
 
     # loop through items in feed in reverse order (older first)
     for item in reversed(items[:5]):
