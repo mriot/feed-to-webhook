@@ -83,6 +83,7 @@ This script also supports generic RSS feeds to be posted to discord.
   - add error handling for posting to webhooks
   - "max post history" config setting (how many posts are made max; default is 5)
   - option to override bot name and avatar in discord (global and per feed)
+  - remove/replace timezone info from timestamp (currently str replace)
 - Twitter Feeds
   - custom embed color for twitter feed
   - show post publish date
