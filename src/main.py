@@ -27,7 +27,7 @@ def main():
             requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching twitter feed {tfeed['url']}"})
         # else:
         #     config["twitter_feeds"][i]["last_item_date"] = result["last_item_date"]
-        new_feed_timestamps[tfeed["url"]] = result.get("last_item_date")
+        new_feed_timestamps[tfeed["url"]] = result.get("last_timestamp")
 
     # rss
     for i, rfeed in enumerate(config["rss_feeds"]):
@@ -36,7 +36,7 @@ def main():
             requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching rss feed {rfeed['url']}"})
         # else:
         #     config["rss_feeds"][i]["last_item_date"] = result["last_item_date"]
-        new_feed_timestamps[rfeed["url"]] = result.get("last_item_date")
+        new_feed_timestamps[rfeed["url"]] = result.get("last_timestamp")
 
     # override config file
     # config_file.seek(0)
