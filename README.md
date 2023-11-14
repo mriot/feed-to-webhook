@@ -1,16 +1,18 @@
 # Feed to Webhook
 
-A simple script that fetches RSS feeds and sends their content to webhooks.  
+A simple script that fetches twitter and RSS feeds and sends their content to webhooks.  
 It's meant to run on a Raspberry Pi and get activated by a cronjob.
 
->📌 On the first run, the script will not post anything. It retrieves the latest item from the feed and then starts monitoring for new posts.
+>📌  
+> On the initial run, nothing is posted to your webhooks. It retrieves the latest item from each feed and then starts monitoring for new posts.  
+> Feed timestamps are automatically saved to `feed_timestamps.yaml`.
 
 ## Config
 
 Specify the feeds you want to subscribe to along with a webhook url in `config.yaml`.  
 Additionally you can provide an error webhook that gets called if a feed could not be loaded.  
 
-> ❗ Make sure to place `config.yaml` in the `src/` directory.
+> ❗ Make sure to rename `config_template.yaml` to `config.yaml` and place it in the `src/` directory.
 
 ``` yaml
 rss_feeds:
@@ -21,7 +23,7 @@ rss_feeds:
   
 twitter_feeds:
   - url: https://nitter.example.com/some_user/rss
-    webhooks:
+    webhooks: ### you can specify multiple webhooks ###
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
     include_retweets: true
@@ -39,16 +41,14 @@ The config is divided into three main sections: `rss_feeds`, `twitter_feeds`, an
 ### rss_feeds
 
 - `url`: URL of the RSS feed.
-- `webhooks`: A list of webhook URLs. When a new item is found in the RSS feed, a message will be sent to each of these webhooks.
+- `webhooks`: A list of webhook URLs. When a new item is found, a message will be sent to each of these webhooks.
 - `embed_color`: The color to be used for the embed in the Discord message. This should be a hexadecimal color code without `#`.
-- [`last_item_date`]: *The date and time of the last post in the feed. Added automatically.*
 
 ### twitter_feeds
 
 - `url`: URL of the Twitter feed. [See below about twitter feeds](#twitter-feeds)
 - `webhooks`: A list of webhook URLs. When a new tweet is found, a message will be sent to each of these webhooks.
 - `include_retweets`: A boolean value that determines whether retweets should be included.
-- [`last_item_date`]: *The date and time of the last post in the feed. Added automatically.*
 
 ### error_webhook
 
@@ -60,7 +60,7 @@ This section contains a single webhook URL. If an error occurs while processing 
 
 ### Twitter Feeds
 
-Since Twitter.com doesn't offer (free) RSS feeds, you could use a community-run [Nitter](https://github.com/zedeus/nitter) instance to get your RSS feeds. You can find a list of instances here <https://status.d420.de/>.  
+Since Twitter.com doesn't offer (free) RSS feeds, you could use a community-run [Nitter](https://github.com/zedeus/nitter) instance to get your RSS feed. You can find a list of instances here <https://status.d420.de/>.  
 
 Some platforms, like Discord or Telegram, don't show previews for Twitter links. But there's a cool service called [FixTweet](https://github.com/FixTweet/FixTweet) that can help with that.
 
