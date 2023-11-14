@@ -19,7 +19,7 @@ def main():
         print("ERROR: config.yaml not found. Program will exit.")
         return 1
 
-    # load timestamps
+    # attempt to load timestamps dict from file (creates file if it doesn't exist)
     with open(feed_ts_path, "a+") as timestamp_file:
         timestamp_file.seek(0)
         prev_feed_timestamps = yaml.safe_load(timestamp_file) or {}
