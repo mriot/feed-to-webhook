@@ -2,15 +2,17 @@ import requests
 from datetime import datetime
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse, urlunparse
+from feed import Feed
 
 
 def twitter_feed(feed, last_timestamp):
-    response = requests.get(feed["url"], headers={"User-Agent": "Hi, I am a bot!"})
+    root = Feed(feed).load()
+    # response = requests.get(feed["url"], headers={"User-Agent": "Hi, I am a bot!"})
 
-    if (response.status_code != 200):
-        return {"error": response.status_code, "last_timestamp": last_timestamp}
+    # if (response.status_code != 200):
+    #     return {"error": response.status_code, "last_timestamp": last_timestamp}
 
-    root = ET.fromstring(response.content.decode("utf-8"))
+    # root = ET.fromstring(response.content.decode("utf-8"))
     items = root.findall("channel/item")
 
     feed_owner = root.find("channel/title").text  # username / @username
