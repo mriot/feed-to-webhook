@@ -29,8 +29,9 @@ class Feed:
 
 
 class TwitterFeed(Feed):
-    def __init__(self, feed_config):
-        super().__init__(feed_config)
+    def __init__(self, url, webgooks, include_retweets=False):
+        # super().__init__(feed_config)
+        pass
 
 
 # feed = TwitterFeed({"url": "https://www.reddit.com/r/Python/.rss"}).load()

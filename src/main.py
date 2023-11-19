@@ -1,28 +1,15 @@
-import os
-import yaml
 import requests
 from twitter_feed import twitter_feed
 from rss_feed import rss_feed
+from file_handler import YamlFile
 
 
 def main():
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(script_dir, "config.yaml")
-    feed_ts_path = os.path.join(script_dir, "feed_timestamps.yaml")
+    config = YamlFile("config.yaml", False).read()
+
+    timestamps_file = YamlFile("feed_timestamps.yaml")
+    prev_feed_timestamps = timestamps_file.read()
     new_feed_timestamps = {}
-
-    # load config
-    try:
-        with open(config_path, "r") as config_file:
-            config = yaml.safe_load(config_file)
-    except FileNotFoundError:
-        print("ERROR: config.yaml not found. Program will exit.")
-        return 1
-
-    # attempt to load timestamps dict from file (creates file if it doesn't exist)
-    with open(feed_ts_path, "a+") as timestamp_file:
-        timestamp_file.seek(0)
-        prev_feed_timestamps = yaml.safe_load(timestamp_file) or {}
 
     # twitter
     for tfeed in config["twitter_feeds"]:
@@ -39,8 +26,7 @@ def main():
             requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching rss feed {rfeed['url']}"})
 
     # update timestamps
-    with open(feed_ts_path, "w") as timestamp_file:
-        yaml.safe_dump(new_feed_timestamps, timestamp_file, sort_keys=False)
+    timestamps_file.write(new_feed_timestamps)
 
 
 if __name__ == "__main__":
