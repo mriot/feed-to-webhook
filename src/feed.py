@@ -29,7 +29,7 @@ class Feed:
 
 
 class TwitterFeed(Feed):
-    def __init__(self, url, webgooks, include_retweets=False):
+    def __init__(self, url, webhooks, include_retweets=False):
         # super().__init__(feed_config)
         pass
 
