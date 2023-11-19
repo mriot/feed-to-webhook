@@ -13,6 +13,8 @@ def main():
 
     # twitter
     for tfeed in config["twitter_feeds"]:
+        # feed = TwitterFeed(url, webhooks, include_retweets=False)
+        # Sender.send(feed)
         result = twitter_feed(tfeed, prev_feed_timestamps.get(tfeed["url"], None))
         new_feed_timestamps[tfeed["url"]] = result.get("last_timestamp")
         if (result.get("error")):
