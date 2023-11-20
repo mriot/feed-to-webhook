@@ -7,10 +7,12 @@ class Feed(ABC):
     def __init__(self, url, webhooks):
         self.url = url
         self.webhooks = webhooks
-
-        self.payload = {}
         self.latest_timestamp = None
         self.content = ""
+
+        self._error = None
+        self._payload = {}
+        self._feed_root = None
 
     @abstractmethod
     def sanitize(self):
@@ -24,29 +26,29 @@ class Feed(ABC):
     def _fetch(self):
         response = requests.get(self.url, headers={"User-Agent": "Hi, I am a bot!"})
         if 200 < response.status_code >= 300:
-            self.payload = {"error": response.status_code}
+            self._error = response.status_code
             raise Exception(response.status_code)
-        self.payload = {"content": response.content}
+        self._payload = response.content
 
     def _parse(self):
         try:
-            payload = self.payload.get("content")
-            if not isinstance(payload, bytes):
+            if not isinstance(self._payload, bytes):
                 raise ET.ParseError
-            root = ET.fromstring(payload.decode())
-            self.payload = {"root": root}
+            root = ET.fromstring(self._payload.decode())
+            self._feed_root = root
+            self.latest_timestamp = root.findtext("channel/item/pubDate")
         except ET.ParseError as e:
-            self.payload = {"error": str(e)}
+            self._error = str(e)
 
-    def _feed_items(self):
-        items = self.payload.get("root").findall("channel/item")
-        self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
+    # def _feed_items(self):
+    #     items = self._feed_root.findall("channel/item")
+    #     self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
 
 
-class FeedItem():
-    def __init__(self, item):
-        self.item = item
-    pass
+# class FeedItem():
+#     def __init__(self, item):
+#         self.item = item
+#     pass
 
 
 class TwitterFeed(Feed):
@@ -55,13 +57,12 @@ class TwitterFeed(Feed):
         self.include_retweets = include_retweets
 
     def sanitize(self):
-        root = self.payload.get("root")
-        if not root or not isinstance(root, ET.Element):
+        if not self._feed_root or not isinstance(self._feed_root, ET.Element):
             raise Exception("Root element not found")
 
-        items = root.findall("channel/item")
+        items = self._feed_root.findall("channel/item")
 
-        feed_owner = (root.find("channel/title") or ET.Element("")).text  # username / @username
+        feed_owner = self._feed_root.findtext("channel/title")  # username / @username
         # feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
         # feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
 
