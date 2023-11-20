@@ -10,7 +10,7 @@ def main():
     config = YamlFile("config.yaml", False).read()
 
     timestamps_file = YamlFile("feed_timestamps.yaml")
-    prev_feed_timestamps = timestamps_file.read()
+    prev_feed_timestamps = timestamps_file.read() or {}
     new_feed_timestamps = {}
 
     # twitter
@@ -18,11 +18,9 @@ def main():
         try:
             url, webhooks, include_retweets = tfeed.get("url"), tfeed.get("webhooks"), tfeed.get("include_retweets")
             feed = TwitterFeed(url, webhooks, include_retweets)
-            content = feed.load().sanitize().payload.get("content")
-            # TODO
-            result = twitter_feed(tfeed, prev_feed_timestamps.get(tfeed["url"], None))
-            new_feed_timestamps[tfeed["url"]] = result.get("last_timestamp")
-            Sender.send(tfeed["webhooks"], content)
+            Sender(feed).send()
+            # result = twitter_feed(tfeed, prev_feed_timestamps.get(tfeed["url"], None))
+            # new_feed_timestamps[tfeed["url"]] = result.get("last_timestamp")
         except Exception as e:
             requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching twitter feed {tfeed['url']}"})
 

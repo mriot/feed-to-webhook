@@ -10,7 +10,7 @@ class Feed(ABC):
         self.include_retweets = include_retweets
 
         self.payload = {}
-        self.root_element = None
+        self.content = ""
 
     @abstractmethod
     def sanitize(self):
@@ -34,28 +34,31 @@ class Feed(ABC):
             if not isinstance(payload, bytes):
                 raise ET.ParseError
             root = ET.fromstring(payload.decode())
-            self.root_element = root
+            self.payload = {"root": root}
         except ET.ParseError as e:
             self.payload = {"error": str(e)}
 
 
-# TODO - implement
 class TwitterFeed(Feed):
     def __init__(self, url, webhooks, include_retweets):
         super().__init__(url, webhooks, include_retweets)
 
     def sanitize(self):
-        if self.root_element is None:
-            raise Exception("No root element found")
-        tweets = []
-        for tweet in self.root_element.findall("channel/item"):
-            title = tweet.find("title").text
-            link = tweet.find("link").text
-            description = tweet.find("description").text
-            tweets.append({
-                "title": title,
-                "link": link,
-                "description": description
-            })
-        self.payload = {"content": tweets}
+        root = self.payload.get("root")
+        if not root or not isinstance(root, ET.Element):
+            raise Exception("Root element not found")
+
+        items = root.findall("channel/item")
+
+        feed_owner = (root.find("channel/title") or ET.Element("")).text  # username / @username
+        feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
+        feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
+
+        # if is_retweet:
+        #     output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
+        # else:
+        #     output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url}"
+
+        self.content = "blub"
+
         return self
