@@ -9,5 +9,7 @@ class Sender:
         self.feed = feed
 
     def send(self):
-        for webhook in self.feed.webhooks:
-            requests.post(webhook, {"content": self.feed.sanitize().content})
+        posts = self.feed.sanitize().content
+        for post in posts:
+            for webhook in self.feed.webhooks:
+                requests.post(webhook, {"content": post})
