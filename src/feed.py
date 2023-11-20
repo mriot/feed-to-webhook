@@ -8,7 +8,8 @@ class Feed(ABC):
         self.url = url
         self.webhooks = webhooks
         self.latest_timestamp = None
-        self.content = ""
+        self.feed_items = []
+        self.content = []
 
         self._error = None
         self._payload = {}
@@ -40,15 +41,22 @@ class Feed(ABC):
         except ET.ParseError as e:
             self._error = str(e)
 
-    # def _feed_items(self):
-    #     items = self._feed_root.findall("channel/item")
-    #     self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
+    def _feed_items(self):
+        if not self._feed_root or not isinstance(self._feed_root, ET.Element):
+            raise Exception("Root element not found")
+        items = self._feed_root.findall("channel/item")
+        self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
 
 
-# class FeedItem():
-#     def __init__(self, item):
-#         self.item = item
-#     pass
+class FeedItem():
+    def __init__(self, item):
+        self.item = item
+
+    def get_post_author(self):
+        return self.item.findtext("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"})
+
+    def get_post_url(self):
+        return self.item.findtext("link")
 
 
 class TwitterFeed(Feed):
@@ -62,15 +70,21 @@ class TwitterFeed(Feed):
 
         items = self._feed_root.findall("channel/item")
 
-        feed_owner = self._feed_root.findtext("channel/title")  # username / @username
-        # feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
-        # feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
+        # TODO: error handling if name not found
+        feed_owner = self._feed_root.findtext("channel/title") or "Unknown"  # username / @username
+        feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
+        feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
+
+        # post_author = item.find("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"}).text  # @username
+        # post_author_link = "https://twitter.com/" + post_author.replace("@", "")
+        # post_url = item.find("link").text
+        # is_retweet = feed_owner.find(post_author) == -1
 
         # if is_retweet:
         #     output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
         # else:
         #     output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url}"
 
-        self.content = f"blub {feed_owner}"
+        self.content.append(f"blub {feed_owner} {feed_owner_accountname} {feed_owner_link}")
 
         return self
