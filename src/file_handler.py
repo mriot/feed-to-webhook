@@ -12,8 +12,8 @@ class YamlFile:
 
     def read(self):
         try:
-            with open(self.file_path, "r") as config_file:
-                return yaml.safe_load(config_file)
+            with open(self.file_path, "r") as file:
+                return yaml.safe_load(file)
         except yaml.YAMLError as e:
             print(f"Error parsing YAML file: {e}")
             sys.exit(1)
@@ -22,5 +22,5 @@ class YamlFile:
             sys.exit(1)
 
     def write(self, data):
-        with open(self.file_path, "w") as config_file:
-            yaml.safe_dump(data, config_file, sort_keys=False)
+        with open(self.file_path, "w") as file:
+            yaml.safe_dump(data, file, sort_keys=False)
