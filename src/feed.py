@@ -35,9 +35,18 @@ class Feed(ABC):
                 raise ET.ParseError
             root = ET.fromstring(payload.decode())
             self.payload = {"root": root}
-            self.latest_timestamp = (root.find("channel/item/pubDate") or ET.Element("")).text
         except ET.ParseError as e:
             self.payload = {"error": str(e)}
+
+    def _feed_items(self):
+        items = self.payload.get("root").findall("channel/item")
+        self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
+
+
+class FeedItem():
+    def __init__(self, item):
+        self.item = item
+    pass
 
 
 class TwitterFeed(Feed):
