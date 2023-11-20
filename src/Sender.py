@@ -10,4 +10,4 @@ class Sender:
 
     def send(self):
         for webhook in self.feed.webhooks:
-            requests.post(webhook, {"content": self.feed.load().sanitize().content})
+            requests.post(webhook, {"content": self.feed.sanitize().content})

@@ -4,12 +4,12 @@ import xml.etree.ElementTree as ET
 
 
 class Feed(ABC):
-    def __init__(self, url, webhooks, include_retweets):
+    def __init__(self, url, webhooks):
         self.url = url
         self.webhooks = webhooks
-        self.include_retweets = include_retweets
 
         self.payload = {}
+        self.latest_timestamp = None
         self.content = ""
 
     @abstractmethod
@@ -35,13 +35,15 @@ class Feed(ABC):
                 raise ET.ParseError
             root = ET.fromstring(payload.decode())
             self.payload = {"root": root}
+            self.latest_timestamp = (root.find("channel/item/pubDate") or ET.Element("")).text
         except ET.ParseError as e:
             self.payload = {"error": str(e)}
 
 
 class TwitterFeed(Feed):
     def __init__(self, url, webhooks, include_retweets):
-        super().__init__(url, webhooks, include_retweets)
+        super().__init__(url, webhooks)
+        self.include_retweets = include_retweets
 
     def sanitize(self):
         root = self.payload.get("root")
@@ -51,14 +53,14 @@ class TwitterFeed(Feed):
         items = root.findall("channel/item")
 
         feed_owner = (root.find("channel/title") or ET.Element("")).text  # username / @username
-        feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
-        feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
+        # feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
+        # feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
 
         # if is_retweet:
         #     output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
         # else:
         #     output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url}"
 
-        self.content = "blub"
+        self.content = f"blub {feed_owner}"
 
         return self
