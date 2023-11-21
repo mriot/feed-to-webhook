@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import requests
 import xml.etree.ElementTree as ET
+from urllib.parse import urlparse, urlunparse
 
 
 class Feed(ABC):
@@ -22,6 +23,7 @@ class Feed(ABC):
     def load(self):
         self._fetch()
         self._parse()
+        # self._feed_items()
         return self
 
     def _fetch(self):
@@ -52,11 +54,20 @@ class FeedItem():
     def __init__(self, item):
         self.item = item
 
-    def get_post_author(self):
-        return self.item.findtext("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"})
+    def get_all(self):
+        return [prop.text for prop in self.item.findall("*")]
+
+    def get_title(self):
+        return self.item.findtext("title")
+
+    def get_description(self):
+        return self.item.findtext("description")
 
     def get_post_url(self):
         return self.item.findtext("link")
+
+    def get_post_author(self):
+        return self.item.findtext("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"})
 
 
 class TwitterFeed(Feed):
@@ -75,16 +86,22 @@ class TwitterFeed(Feed):
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
         feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
 
-        # post_author = item.find("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"}).text  # @username
-        # post_author_link = "https://twitter.com/" + post_author.replace("@", "")
-        # post_url = item.find("link").text
-        # is_retweet = feed_owner.find(post_author) == -1
+        for item in reversed(items[:5]):
+            post_author = item.findtext("dc:creator", default="", namespaces={"dc": "http://purl.org/dc/elements/1.1/"})  # @username
+            post_author_link = "https://twitter.com/" + post_author.replace("@", "")
+            post_url = item.findtext("link")
+            is_retweet = feed_owner.find(post_author) == -1
 
-        # if is_retweet:
-        #     output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
-        # else:
-        #     output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url}"
+            if is_retweet and not self.include_retweets:
+                continue
 
-        self.content.append(f"blub {feed_owner} {feed_owner_accountname} {feed_owner_link}")
+            post_url = urlunparse(urlparse(post_url)._replace(netloc="fxtwitter.com"))
+
+            if is_retweet:
+                output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
+            else:
+                output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url}"
+
+            self.content.append(output)
 
         return self
