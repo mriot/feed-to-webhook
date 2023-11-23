@@ -13,3 +13,9 @@ class Sender:
         for post in posts:
             for webhook in self.feed.webhooks:
                 requests.post(webhook, {"content": post})
+
+    def send_json(self):
+        posts = self.feed.sanitize().content
+        for post in posts:
+            for webhook in self.feed.webhooks:
+                requests.post(webhook, json={"embeds": post})

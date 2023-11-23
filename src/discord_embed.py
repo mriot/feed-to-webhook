@@ -2,16 +2,16 @@ def discord_embed(data):
     return [
         {
             "author": {
-                "name": data["feed_owner"],
-                "url": data["feed_owner_link"],
+                "name": data.get("feed_owner"),
+                "url": data.get("feed_owner_link"),
                 # "icon_url": "https://i.imgur.com/R66g1Pe.jpg"
             },
-            "title": data["post_title"],
+            "title": data.get("post_title"),
             "url": data.get("post_url", ""),
-            "description": data["post_description"],
-            "color": data["color"],
+            "description": data.get("post_description"),
+            # "color": data.get("color", 0x00FF00),
             "image": {
-                "url": data["enclosure"]
+                "url": data.get("enclosure")
             },
             "timestamp": data.get('post_date', ''),
         }
