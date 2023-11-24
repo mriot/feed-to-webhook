@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import requests
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse, urlunparse
-
+from dateutil.parser import parse
 from discord_embed import discord_embed
 
 
@@ -25,14 +25,14 @@ class Feed(ABC):
     def load(self):
         self._fetch()
         self._parse()
-        # self._feed_items()
+        self._feed_items()
         return self
 
     def _fetch(self):
         response = requests.get(self.url, headers={"User-Agent": "Hi, I am a bot!"})
         if 200 < response.status_code >= 300:
             self._error = response.status_code
-            raise Exception(response.status_code)
+            raise Exception(response.status_code)  # TODO: fetch exception
         self._payload = response.content
 
     def _parse(self):
@@ -41,7 +41,7 @@ class Feed(ABC):
                 raise ET.ParseError
             root = ET.fromstring(self._payload.decode())
             self._feed_root = root
-            self.latest_timestamp = root.findtext("channel/item/pubDate")
+            self.latest_timestamp = root.findtext("channel/item/pubDate")  # TODO: still needed?
         except ET.ParseError as e:
             self._error = str(e)
 
@@ -52,26 +52,23 @@ class Feed(ABC):
         self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
 
 
+###############
+## FEED ITEM ##
+###############
 class FeedItem():
     def __init__(self, item):
-        self.item = item
+        self.root = item
 
-    def get_all(self):
-        return [prop.text for prop in self.item.findall("*")]
-
-    def get_title(self):
-        return self.item.findtext("title")
-
-    def get_description(self):
-        return self.item.findtext("description")
-
-    def get_post_url(self):
-        return self.item.findtext("link")
-
-    def get_post_author(self):
-        return self.item.findtext("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"})
+    def get_pubdate(self):
+        pubdate = self.root.findtext("pubDate")
+        if not pubdate:
+            return None
+        return parse(pubdate)
 
 
+##################
+## TWITTER FEED ##
+##################
 class TwitterFeed(Feed):
     def __init__(self, url, webhooks, include_retweets=True):
         super().__init__(url, webhooks)
@@ -81,7 +78,7 @@ class TwitterFeed(Feed):
         if not self._feed_root or not isinstance(self._feed_root, ET.Element):
             raise Exception("Root element not found")
 
-        items = self._feed_root.findall("channel/item")
+        items = self.feed_items
 
         # TODO: error handling if name not found
         feed_owner = self._feed_root.findtext("channel/title") or "Unknown"  # username / @username
@@ -89,9 +86,9 @@ class TwitterFeed(Feed):
         feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
 
         for item in reversed(items[:5]):
-            post_author = item.findtext("dc:creator", default="", namespaces={"dc": "http://purl.org/dc/elements/1.1/"})  # @username
+            post_author = item.root.findtext("dc:creator", default="", namespaces={"dc": "http://purl.org/dc/elements/1.1/"})  # @username
             post_author_link = "https://twitter.com/" + post_author.replace("@", "")
-            post_url = item.findtext("link")
+            post_url = item.root.findtext("link")
             is_retweet = feed_owner.find(post_author) == -1
 
             if is_retweet and not self.include_retweets:
@@ -109,6 +106,9 @@ class TwitterFeed(Feed):
         return self
 
 
+##############
+## RSS FEED ##
+##############
 class RssFeed(Feed):
     # TODO: add embed color param
     def __init__(self, url, webhooks, summarize=True):
