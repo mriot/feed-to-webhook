@@ -1,46 +1,42 @@
-import os
-import yaml
 import requests
-from twitter_feed import twitter_feed
-from rss_feed import rss_feed
+from Sender import Sender
+from twitter_feed import TwitterFeed
+from rss_feed import RssFeed
+from timestamps import Timestamps
+from file_handler import YamlFile
 
 
 def main():
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(script_dir, "config.yaml")
-    feed_ts_path = os.path.join(script_dir, "feed_timestamps.yaml")
-    new_feed_timestamps = {}
-
-    # load config
-    try:
-        with open(config_path, "r") as config_file:
-            config = yaml.safe_load(config_file)
-    except FileNotFoundError:
-        print("ERROR: config.yaml not found. Program will exit.")
-        return 1
-
-    # attempt to load timestamps dict from file (creates file if it doesn't exist)
-    with open(feed_ts_path, "a+") as timestamp_file:
-        timestamp_file.seek(0)
-        prev_feed_timestamps = yaml.safe_load(timestamp_file) or {}
+    config = YamlFile("config.yaml", False).read()
+    timestamps = Timestamps()
 
     # twitter
-    for tfeed in config["twitter_feeds"]:
-        result = twitter_feed(tfeed, prev_feed_timestamps.get(tfeed["url"], None))
-        new_feed_timestamps[tfeed["url"]] = result.get("last_timestamp")
-        if (result.get("error")):
-            requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching twitter feed {tfeed['url']}"})
+    for tfeed in config.get("twitter_feeds", []):
+        try:
+            url, webhooks, include_retweets = tfeed.get("url"), tfeed.get("webhooks"), tfeed.get("include_retweets")
+            feed = TwitterFeed(url, webhooks, include_retweets)
+            feed.load()
+            timestamps.check_for_new_posts(feed)
+            Sender(feed).send()
+            timestamps.update(url, feed.latest_timestamp)
+        except Exception as e:
+            print(e)
+            requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching twitter feed {tfeed['url']}"})
 
     # rss
-    for rfeed in config["rss_feeds"]:
-        result = rss_feed(rfeed, prev_feed_timestamps.get(rfeed["url"], None))
-        new_feed_timestamps[rfeed["url"]] = result.get("last_timestamp")
-        if (result.get("error")):
-            requests.post(config["error_webhook"], {"content": f"Error {str(result['error'])} while fetching rss feed {rfeed['url']}"})
+    # for rfeed in config.get("rss_feeds", []):
+    #     try:
+    #         url, webhooks, summarize = rfeed.get("url"), rfeed.get("webhooks"), rfeed.get("summarize")
+    #         feed = RssFeed(url, webhooks, summarize)
+    #         feed.load()
+    #         if not timestamps.is_newer(feed):
+    #             continue
+    #         Sender(feed).send_json()
+    #         timestamps.update(url, feed.latest_timestamp)
+    #     except Exception as e:
+    #         requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching RSS feed {rfeed['url']}"})
 
-    # update timestamps
-    with open(feed_ts_path, "w") as timestamp_file:
-        yaml.safe_dump(new_feed_timestamps, timestamp_file, sort_keys=False)
+    timestamps.write()
 
 
 if __name__ == "__main__":
