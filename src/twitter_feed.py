@@ -19,7 +19,7 @@ class TwitterFeed(Feed):
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
         feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
 
-        for item in reversed(items[:5]):
+        for item in items[:5]:
             post_author = item.root.findtext("dc:creator", default="", namespaces={"dc": "http://purl.org/dc/elements/1.1/"})  # @username
             post_author_link = "https://twitter.com/" + post_author.replace("@", "")
             post_url = item.root.findtext("link")
@@ -33,7 +33,7 @@ class TwitterFeed(Feed):
             if is_retweet:
                 output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
             else:
-                output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url}"
+                output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url} ({str(item.get_pubdate())})"
 
             self.content.append(output)
 
