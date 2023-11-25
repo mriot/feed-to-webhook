@@ -1,6 +1,7 @@
 import requests
 from Sender import Sender
-from feed import RssFeed, TwitterFeed
+from twitter_feed import TwitterFeed
+from rss_feed import RssFeed
 from timestamps import Timestamps
 from file_handler import YamlFile
 
