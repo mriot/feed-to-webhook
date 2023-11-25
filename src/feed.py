@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import xml.etree.ElementTree as ET
 from dateutil.parser import parse
 import feedparser
 
@@ -21,7 +20,7 @@ class Feed(ABC):
         self.url = url
         self.webhooks = webhooks
 
-        self.feed_root = {}
+        self.feed_data_dict = feedparser.FeedParserDict()
         self.feed_items = []
         self.latest_timestamp = None
         self.final_items_to_be_posted = []  # populated by prepare_content()
@@ -31,20 +30,16 @@ class Feed(ABC):
         return self
 
     def load(self):
-        self.feed_root = feedparser.parse(self.url)
+        self.feed_data_dict = feedparser.parse(self.url)
 
-        if not isinstance(self.feed_root, feedparser.FeedParserDict):
-            raise Exception(f"Root element not found in feed {self.url}")
+        # TODO
+        if self.feed_data_dict.get("bozo_exception"):
+            raise Exception(f"Malformed feed data {self.feed_data_dict.get('bozo_exception')}")
 
-        self.latest_timestamp = self.feed_root.entries[0].published
+        self.latest_timestamp = self.feed_data_dict.get("items", [])[0].get("published")
         self._make_feed_items()
-
-        print(type(self.feed_root))
-        temp = self.feed_root.get('title', 'No title')
-        print(temp)
-
         return self
 
     def _make_feed_items(self):
-        items = self.feed_root.get("items", [])
+        items = self.feed_data_dict.get("items", [])
         self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
