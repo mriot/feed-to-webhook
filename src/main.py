@@ -16,9 +16,9 @@ def main():
             url, webhooks, include_retweets = tfeed.get("url"), tfeed.get("webhooks"), tfeed.get("include_retweets")
             feed = TwitterFeed(url, webhooks, include_retweets)
             feed.load()
-            timestamps.check_for_new_posts(feed)
+            timestamps.filter_out_old_posts(feed)
             Sender(feed).send()
-            timestamps.update(url, feed.latest_timestamp)
+            timestamps.update(feed)
         except Exception as e:
             print(e)
             requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching twitter feed {tfeed['url']}"})
@@ -36,7 +36,7 @@ def main():
     #     except Exception as e:
     #         requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching RSS feed {rfeed['url']}"})
 
-    timestamps.write()
+    # timestamps.write()
 
 
 if __name__ == "__main__":

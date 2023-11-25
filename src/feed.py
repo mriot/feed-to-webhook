@@ -1,63 +1,50 @@
 from abc import ABC, abstractmethod
-import requests
 import xml.etree.ElementTree as ET
-from urllib.parse import urlparse, urlunparse
 from dateutil.parser import parse
-from discord_embed import discord_embed
+import feedparser
 
 
 class FeedItem():
     def __init__(self, item):
-        self.root = item
+        self.item_root = item
+        # print("\n", self.item_root)
 
     def get_pubdate(self):
-        pubdate = self.root.findtext("pubDate")
-        if not pubdate:
-            return None
-        return parse(pubdate)
+        return parse(self.item_root.get("published"))  # datetime object
+
+    def get_author(self):
+        return self.item_root.get("author")
 
 
 class Feed(ABC):
     def __init__(self, url, webhooks):
         self.url = url
         self.webhooks = webhooks
-        self.latest_timestamp = None
-        self.feed_items = []
-        self.content = []
 
-        self._error = None
-        self._payload = {}
-        self._feed_root = None
+        self.feed_root = {}
+        self.feed_items = []
+        self.latest_timestamp = None
+        self.final_items_to_be_posted = []  # populated by prepare_content()
 
     @abstractmethod
-    def sanitize(self):
+    def prepare_content(self):
         return self
 
     def load(self):
-        self._fetch()
-        self._parse()
-        self._feed_items()
+        self.feed_root = feedparser.parse(self.url)
+
+        if not isinstance(self.feed_root, feedparser.FeedParserDict):
+            raise Exception(f"Root element not found in feed {self.url}")
+
+        self.latest_timestamp = self.feed_root.entries[0].published
+        self._make_feed_items()
+
+        print(type(self.feed_root))
+        temp = self.feed_root.get('title', 'No title')
+        print(temp)
+
         return self
 
-    def _fetch(self):
-        response = requests.get(self.url, headers={"User-Agent": "Hi, I am a bot!"})
-        if 200 < response.status_code >= 300:
-            self._error = response.status_code
-            raise Exception(response.status_code)  # TODO: fetch exception
-        self._payload = response.content
-
-    def _parse(self):
-        try:
-            if not isinstance(self._payload, bytes):
-                raise ET.ParseError
-            root = ET.fromstring(self._payload.decode())
-            self._feed_root = root
-            self.latest_timestamp = root.findtext("channel/item/pubDate")  # TODO: still needed?
-        except ET.ParseError as e:
-            self._error = str(e)
-
-    def _feed_items(self):
-        if not self._feed_root or not isinstance(self._feed_root, ET.Element):
-            raise Exception("Root element not found")
-        items = self._feed_root.findall("channel/item")
+    def _make_feed_items(self):
+        items = self.feed_root.get("items", [])
         self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
