@@ -1,53 +1,40 @@
-import requests
-from datetime import datetime
-import xml.etree.ElementTree as ET
 from urllib.parse import urlparse, urlunparse
-from feed import Feed
+import xml.etree.ElementTree as ET
+from feed import Feed, FeedItem
 
 
-def twitter_feed(feed, last_timestamp):
-    root = Feed(feed).load()
-    # response = requests.get(feed["url"], headers={"User-Agent": "Hi, I am a bot!"})
+class TwitterFeed(Feed):
+    def __init__(self, url, webhooks, include_retweets=True):
+        super().__init__(url, webhooks)
+        self.include_retweets = include_retweets
 
-    # if (response.status_code != 200):
-    #     return {"error": response.status_code, "last_timestamp": last_timestamp}
+    def sanitize(self):
+        if not self._feed_root or not isinstance(self._feed_root, ET.Element):
+            raise Exception("Root element not found")
 
-    # root = ET.fromstring(response.content.decode("utf-8"))
-    items = root.findall("channel/item")
+        items = self.feed_items
 
-    feed_owner = root.find("channel/title").text  # username / @username
-    feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
-    feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
+        # TODO: error handling if name not found
+        feed_owner = self._feed_root.findtext("channel/title") or "Unknown"  # username / @username
+        feed_owner_accountname = feed_owner.split(" / ")[-1]  # @username
+        feed_owner_link = "https://twitter.com/" + feed_owner_accountname.replace("@", "")
 
-    # first run of script only gets the newest item date and returns it
-    if last_timestamp == None:
-        return {"last_timestamp": items[0].find("pubDate").text}
+        for item in items[:5]:
+            post_author = item.root.findtext("dc:creator", default="", namespaces={"dc": "http://purl.org/dc/elements/1.1/"})  # @username
+            post_author_link = "https://twitter.com/" + post_author.replace("@", "")
+            post_url = item.root.findtext("link")
+            is_retweet = feed_owner.find(post_author) == -1
 
-    last_timestamp_parsed = datetime.strptime(last_timestamp.replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
+            if is_retweet and not self.include_retweets:
+                continue
 
-    # loop through items in feed in reverse order (older first)
-    for item in reversed(items[:5]):
-        item_date = datetime.strptime(item.find("pubDate").text.replace("GMT", "+0000"), "%a, %d %b %Y %H:%M:%S %z")  # Thu, 09 Nov 2023 16:25:33 GMT
-        # a more recent date is considered _greater_ than an older date
-        if item_date <= last_timestamp_parsed:
-            continue
+            post_url = urlunparse(urlparse(post_url)._replace(netloc="fxtwitter.com"))
 
-        post_author = item.find("dc:creator", {"dc": "http://purl.org/dc/elements/1.1/"}).text  # @username
-        post_author_link = "https://twitter.com/" + post_author.replace("@", "")
-        post_url = item.find("link").text
-        is_retweet = feed_owner.find(post_author) == -1
+            if is_retweet:
+                output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
+            else:
+                output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url} ({str(item.get_pubdate())})"
 
-        if is_retweet and feed["include_retweets"] == False:
-            continue
+            self.content.append(output)
 
-        post_url = urlunparse(urlparse(post_url)._replace(netloc="fxtwitter.com"))
-
-        if is_retweet:
-            output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_link}>)\n{post_url}"
-        else:
-            output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted \n{post_url}"
-
-        for webhook in feed["webhooks"]:
-            requests.post(webhook, {"content": output})
-
-    return {"last_timestamp": items[0].find("pubDate").text}  # we assume that the first item is the newest one
+        return self
