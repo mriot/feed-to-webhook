@@ -21,6 +21,7 @@ class Timestamps:
         self._timestamps_file.write(self._timestamps)
 
     def check_for_new_posts(self, feed):
+        # TODO: cant compare to none type
         new_posts = [post for post in feed.feed_items if post.get_pubdate() > self.get(feed.url)]
         print(feed.feed_items, new_posts)
         feed.feed_items = new_posts
