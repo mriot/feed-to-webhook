@@ -1,7 +1,5 @@
-from urllib.parse import urlparse, urlunparse
-import xml.etree.ElementTree as ET
 from discord_embed import discord_embed
-from feed import Feed, FeedItem
+from feed import Feed
 
 
 class RssFeed(Feed):
@@ -13,31 +11,21 @@ class RssFeed(Feed):
     def summarize_text(self):
         pass
 
-    def sanitize(self):
-        if not self._feed_root or not isinstance(self._feed_root, ET.Element):
-            raise Exception("Root element not found")
+    def prepare_content(self):
+        d = self.feed_data_dict
 
-        items = self._feed_root.findall("channel/item")
+        for item in reversed(self.feed_items[:5]):
+            output = discord_embed({
+                "feed_title": d.feed.get("title"),
+                "feed_link": d.feed.get("link"),
 
-        feed_owner = self._feed_root.findtext("channel/title")
-        feed_description = self._feed_root.findtext("channel/description")
-        feed_owner_link = self._feed_root.findtext("channel/link")
+                "post_title": item.item_root.get("title"),
+                "post_link": item.item_root.get("link"),
+                "post_description": item.item_root.get("description"),
+                "post_enclosure": item.item_root.get("enclosure"),
+                "post_date": str(item.get_pubdate()),
+            })
 
-        for item in reversed(items[:5]):
-            data = {
-                "feed_owner": feed_owner,
-                "feed_description": feed_description,
-                "feed_owner_link": feed_owner_link,
-                "post_title": item.findtext("title"),
-                "post_url": item.findtext("link"),
-                "post_description": item.findtext("description"),
-                # "post_date": item_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                # "enclosure": item.find("enclosure").get("url") if item.find("enclosure") != None else "",
-                # "color": int(feed.get("embed_color", "0"), 16)
-            }
-
-            output = discord_embed(data)
-
-            self.content.append(output)
+            self.final_items_to_be_posted.append(output)
 
         return self
