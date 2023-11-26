@@ -1,5 +1,5 @@
 import requests
-from Sender import Sender
+from sender import Sender
 from twitter_feed import TwitterFeed
 from rss_feed import RssFeed
 from timestamps import Timestamps
