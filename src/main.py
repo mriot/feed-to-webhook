@@ -36,7 +36,7 @@ def main():
     #     except Exception as e:
     #         requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching RSS feed {rfeed['url']}"})
 
-    # timestamps.write()
+    timestamps.write()
 
 
 if __name__ == "__main__":
