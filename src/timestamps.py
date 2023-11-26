@@ -1,5 +1,6 @@
 from file_handler import YamlFile
 from dateutil.parser import parse
+from datetime import datetime
 
 
 class Timestamps:
@@ -9,26 +10,16 @@ class Timestamps:
 
     def get(self, url):
         timestamp = self._timestamps.get(url)
-        print(timestamp)
         if not timestamp:
-            return None
-        return parse(timestamp)
+            # only save latest feed timestamp on first run; don't post anything
+            return datetime.now(tz=None)
+        return parse(timestamp, ignoretz=True)
 
-    def update(self, url, timestamp):
-        self._timestamps[url] = timestamp
+    def update(self, feed):
+        self._timestamps[feed.url] = feed.latest_timestamp
 
     def write(self):
         self._timestamps_file.write(self._timestamps)
 
-    def check_for_new_posts(self, feed):
-        # TODO: cant compare to none type
-        new_posts = [post for post in feed.feed_items if post.get_pubdate() > self.get(feed.url)]
-        print(feed.feed_items, new_posts)
-        feed.feed_items = new_posts
-
-    def is_newer(self, feed):
-        url = feed.url
-        timestamp = self.get(url)
-        if not timestamp:
-            return True
-        return feed.latest_timestamp > timestamp  # a more recent date is considered greater
+    def filter_out_old_posts(self, feed):
+        feed.feed_items = [post for post in feed.feed_items if post.get_pubdate() > self.get(feed.url)]

@@ -23,4 +23,4 @@ class YamlFile:
 
     def write(self, data):
         with open(self.file_path, "w") as file:
-            yaml.safe_dump(data, file, sort_keys=False)
+            yaml.safe_dump(data, file, sort_keys=False, width=1000, indent=4, allow_unicode=True)
