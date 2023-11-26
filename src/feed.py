@@ -8,7 +8,7 @@ class FeedItem():
         self.item_root = item
 
     def get_pubdate(self):
-        return parse(self.item_root.get("published"), ignoretz=True)  # datetime object
+        return parse(self.item_root.get("published"))  # datetime object
 
     def get_author(self):
         return self.item_root.get("author")

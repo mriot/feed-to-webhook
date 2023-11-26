@@ -1,5 +1,6 @@
 from file_handler import YamlFile
 from dateutil.parser import parse
+from dateutil import tz
 from datetime import datetime
 
 
@@ -12,8 +13,8 @@ class Timestamps:
         timestamp = self._timestamps.get(url)
         if not timestamp:
             # only save latest feed timestamp on first run; don't post anything
-            return datetime.now(tz=None)
-        return parse(timestamp, ignoretz=True)
+            return datetime.now(tz=tz.UTC)
+        return parse(timestamp)
 
     def update(self, feed):
         self._timestamps[feed.url] = feed.latest_timestamp
