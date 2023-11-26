@@ -1,5 +1,6 @@
 from urllib.parse import urlparse, urlunparse
 from feed import Feed
+from discord_embed import discord_embed2
 
 
 class TwitterFeed(Feed):
@@ -29,6 +30,17 @@ class TwitterFeed(Feed):
                 output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_url}>) at <t:{post_date}> \n{post_url}"
             else:
                 output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted at <t:{post_date}> \n{post_url}"
+
+                # TODO: implement custom embed
+                # output = discord_embed2({
+                #     "feed_owner": feed_owner_accountname,
+                #     "feed_owner_link": feed_owner_link,
+                #     "post_title": feed_owner,
+                #     "post_url": post_url,
+                #     "post_description": "Lorem Ipsum",
+                #     "enclosure": "",
+                #     "post_date": str(item.get_pubdate()),
+                # })
 
             self.final_items_to_be_posted.append(output)
 
