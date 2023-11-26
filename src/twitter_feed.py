@@ -16,6 +16,8 @@ class TwitterFeed(Feed):
             post_author = item.item_root.get("author")  # @username
             post_author_url = f"https://twitter.com/{post_author.replace('@', '')}" if post_author else ""
             post_url = item.item_root.get("link", "")
+            post_url = urlunparse(urlparse(post_url)._replace(netloc="fxtwitter.com"))  # enables an embed view for twitter posts
+            # TODO: differntiate between platforms (timestamp)
             # post_date = item.get_pubdate().strftime("%b %d, %Y %H:%M:%S")
             post_date = int(item.get_pubdate().timestamp())  # used with special discord syntax <t:timestamp>
             is_retweet = feed_owner.find(post_author) == -1 if feed_owner and post_author else False
@@ -23,11 +25,8 @@ class TwitterFeed(Feed):
             if is_retweet and not self.include_retweets:
                 continue
 
-            # enables an embed view for twitter posts (which is disabled for some reason)
-            post_url = urlunparse(urlparse(post_url)._replace(netloc="fxtwitter.com"))
-
             if is_retweet:
-                output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_url}>)\n{post_url}"
+                output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_url}>) at <t:{post_date}> \n{post_url}"
             else:
                 output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted at <t:{post_date}> \n{post_url}"
 
