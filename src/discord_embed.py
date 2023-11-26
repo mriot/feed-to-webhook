@@ -1,6 +1,5 @@
-# TODO
 def discord_embed(data):
-    keys = ["feed_title", "feed_link", "post_title", "post_link", "post_description", "post_enclosure", "post_date"]
+    keys = ["feed_title", "feed_link", "post_title", "post_link", "post_description", "color", "post_enclosure", "post_date"]
     embed_dict = {key: data.get(key, '') for key in keys if key in data}
 
     embed = {
@@ -12,6 +11,7 @@ def discord_embed(data):
         "title": embed_dict.get("post_title"),
         "url": embed_dict.get("post_link"),
         "description": embed_dict.get("post_description"),
+        "color": embed_dict.get("color"),
         "image": {
             "url": embed_dict.get("post_enclosure")
         },

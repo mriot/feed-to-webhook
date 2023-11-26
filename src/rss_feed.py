@@ -15,6 +15,7 @@ class RssFeed(Feed):
         d = self.feed_data_dict
 
         for item in reversed(self.feed_items[:5]):
+            # TODO: add embed color param
             output = discord_embed({
                 "feed_title": d.feed.get("title"),
                 "feed_link": d.feed.get("link"),
