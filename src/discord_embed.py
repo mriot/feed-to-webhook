@@ -1,39 +1,20 @@
-def discord_embed(data):
-    return [
-        {
-            "author": {
-                "name": data.get("feed_owner"),
-                "url": data.get("feed_owner_link"),
-                # "icon_url": "https://i.imgur.com/R66g1Pe.jpg"
-            },
-            "title": data.get("post_title"),
-            "url": data.get("post_url", ""),
-            "description": data.get("post_description"),
-            # "color": data.get("color", 0x00FF00),
-            "image": {
-                "url": data.get("enclosure")
-            },
-            "timestamp": data.get('post_date', ''),
-        }
-    ]
-
-
 # TODO
-def discord_embed2(data):
-    keys = ["feed_owner", "feed_owner_link", "post_title", "post_url", "post_description", "enclosure", "post_date"]
+def discord_embed(data):
+    keys = ["feed_title", "feed_link", "post_title", "post_link", "post_description", "post_enclosure", "post_date"]
     embed_dict = {key: data.get(key, '') for key in keys if key in data}
 
     embed = {
         "author": {
-            "name": embed_dict.get("feed_owner"),
-            "url": embed_dict.get("feed_owner_link"),
+            "name": embed_dict.get("feed_title"),
+            "url": embed_dict.get("feed_link"),
+            # "icon_url": "https://i.imgur.com/R66g1Pe.jpg"
         },
         "title": embed_dict.get("post_title"),
-        "url": embed_dict.get("post_url"),
+        "url": embed_dict.get("post_link"),
         "description": embed_dict.get("post_description"),
-        # "image": {
-        #     "url": embed_dict.get("enclosure")
-        # },
+        "image": {
+            "url": embed_dict.get("post_enclosure")
+        },
         "timestamp": embed_dict.get('post_date'),
     }
 

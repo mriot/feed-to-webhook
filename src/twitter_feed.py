@@ -1,6 +1,6 @@
 from urllib.parse import urlparse, urlunparse
 from feed import Feed
-from discord_embed import discord_embed2
+from discord_embed import discord_embed
 
 
 class TwitterFeed(Feed):
@@ -32,7 +32,7 @@ class TwitterFeed(Feed):
                 output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted at <t:{post_date}> \n{post_url}"
 
                 # TODO: implement custom embed
-                # output = discord_embed2({
+                # output = discord_embed({
                 #     "feed_owner": feed_owner_accountname,
                 #     "feed_owner_link": feed_owner_link,
                 #     "post_title": feed_owner,
