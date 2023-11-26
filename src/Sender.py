@@ -9,13 +9,15 @@ class Sender:
         self.feed = feed
 
     def send(self):
-        posts = self.feed.sanitize().content
+        posts = self.feed.prepare_content().final_items_to_be_posted
         for post in posts:
             for webhook in self.feed.webhooks:
-                requests.post(webhook, {"content": post})
+                res = requests.post(webhook, {"content": post})
+                print(f"Status Code: {res.status_code}, Message: {res.reason}")
 
     def send_json(self):
-        posts = self.feed.sanitize().content
+        posts = self.feed.prepare_content().final_items_to_be_posted
         for post in posts:
             for webhook in self.feed.webhooks:
-                requests.post(webhook, json={"embeds": post})
+                res = requests.post(webhook, json={"embeds": post}, headers={"Content-Type": "application/json"})
+                print(f"Status Code: {res.status_code}, Message: {res.reason}")
