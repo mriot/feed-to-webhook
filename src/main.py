@@ -24,17 +24,17 @@ def main():
             requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching twitter feed {tfeed['url']}"})
 
     # rss
-    # for rfeed in config.get("rss_feeds", []):
-    #     try:
-    #         url, webhooks, summarize = rfeed.get("url"), rfeed.get("webhooks"), rfeed.get("summarize")
-    #         feed = RssFeed(url, webhooks, summarize)
-    #         feed.load()
-    #         if not timestamps.is_newer(feed):
-    #             continue
-    #         Sender(feed).send_json()
-    #         timestamps.update(url, feed.latest_timestamp)
-    #     except Exception as e:
-    #         requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching RSS feed {rfeed['url']}"})
+    for rfeed in config.get("rss_feeds", []):
+        try:
+            url, webhooks, summarize = rfeed.get("url"), rfeed.get("webhooks"), rfeed.get("summarize")
+            feed = RssFeed(url, webhooks, summarize)
+            feed.load()
+            timestamps.filter_out_old_posts(feed)
+            Sender(feed).send_json()
+            timestamps.update(feed)
+        except Exception as e:
+            print(e)
+            requests.post(config["error_webhook"], {"content": f"Error {str(e)} while fetching RSS feed {rfeed['url']}"})
 
     timestamps.write()
 
