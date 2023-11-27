@@ -11,7 +11,7 @@ def discord_embed(data):
         "title": embed_dict.get("post_title"),
         "url": embed_dict.get("post_link"),
         "description": embed_dict.get("post_description"),
-        "color": int(embed_dict.get("embed_color", "1ABC9C"), 16),
+        "color": int(str(embed_dict.get("embed_color") or "738adb"), 16),
         "image": {
             "url": embed_dict.get("post_enclosure")
         },
