@@ -10,7 +10,7 @@ A script that fetches Twitter and RSS feeds and sends them to Discord using webh
 
 > ❗ Requires Python 3.6 or higher
 
-- Clone this project, optionally create a [virtual environment](https://docs.python.org/3/library/venv.html) and run `pip install -r requirements.txt` to install dependencies  
+- Download this project, optionally create a [virtual environment](https://docs.python.org/3/library/venv.html) and run `pip install -r requirements.txt` to install dependencies  
 - In `src/` rename `config_template.yaml` to `config.yaml` and add your feeds
 - On a Raspberry Pi you could use `crontab -e` to create a cronjob  
   E.g. `*/15 * * * * python3 {path_to_project}/src/main.py` (*every 15th minute*)  
