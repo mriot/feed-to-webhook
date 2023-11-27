@@ -42,7 +42,7 @@ The config is divided into three main sections: `rss_feeds`, `twitter_feeds`, an
 
 #### `error_webhook`
 
-A single webhook URL. If an error occurs while processing the feeds, a message will be sent to this webhook.
+- A single webhook URL. If an error occurs while processing the feeds, a message will be sent to this webhook.
 
 </details>
 
