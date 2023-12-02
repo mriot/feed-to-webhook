@@ -85,7 +85,7 @@ Some platforms, like Discord or Telegram, don't show previews for Twitter links.
 
 ### <img src="https://github.com/mriot/feed-to-webhook/assets/24588573/8548a7e7-4f34-46f3-9adf-66f627ced6f9" height="15" /> RSS Feeds
 
-This script supports various RSS and Atom versions.
+This script supports various RSS and Atom versions thanks to [feedparser](https://github.com/kurtmckee/feedparser).
 
 ## Resources
 
@@ -94,4 +94,4 @@ This script supports various RSS and Atom versions.
 - Nitter Instance Uptime & Health <https://status.d420.de/>
 - Crontab Guru <https://crontab.guru/>
 
-See [requirements.txt](requirements.txt) for the list of dependencies.
+See [requirements.txt](requirements.txt) for a list of dependencies.
