@@ -54,7 +54,7 @@ def main():
     timestamps.write()
 
     END_TIME = time.time()
-    print(f"Runtime: {round(END_TIME - START_TIME, 1)} seconds")
+    print(f"Execution time: {round(END_TIME - START_TIME, 1)} seconds")
 
 
 if __name__ == "__main__":
