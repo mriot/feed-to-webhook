@@ -5,9 +5,12 @@ from rss_feed import RssFeed
 from timestamps import Timestamps
 from file_handler import YamlFile
 import traceback
+import time
 
 
 def main():
+    START_TIME = time.time()
+
     CONFIG = YamlFile("config.yaml", False).read()
     timestamps = Timestamps()
 
@@ -49,6 +52,9 @@ def main():
             requests.post(CONFIG.get("error_webhook"), {"content": err})
 
     timestamps.write()
+
+    END_TIME = time.time()
+    print(f"Runtime: {round(END_TIME - START_TIME, 1)} seconds")
 
 
 if __name__ == "__main__":
