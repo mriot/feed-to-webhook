@@ -1,6 +1,8 @@
 from urllib.parse import urlparse, urlunparse
 from feed import Feed
 from discord_embed import discord_embed
+from html2text import html2text
+from bs4 import BeautifulSoup
 
 
 class TwitterFeed(Feed):
@@ -12,6 +14,8 @@ class TwitterFeed(Feed):
         feed_owner = self.feed_data_dict.feed.get("title", "[unknown]")  # -> username / @username
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # -> @username
         feed_owner_link = f"https://twitter.com/{feed_owner_accountname.replace('@', '')}"
+        feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
+        feed_color = int(str(self.feed_data_dict.feed.get("color") or "1DA1F2"), 16)
 
         for item in self.feed_items[:5]:
             post_author = item.item_root.get("author")  # @username
@@ -23,6 +27,18 @@ class TwitterFeed(Feed):
             post_date = int(item.get_pubdate().timestamp())  # used with special discord syntax <t:timestamp>
             is_retweet = feed_owner.find(post_author) == -1 if feed_owner and post_author else False
 
+            post_title = item.item_root.get("title")
+            post_description = item.item_root.get("description")
+
+            soup = BeautifulSoup(post_description, "html.parser")
+            img_tags = soup.find_all("img")
+            img_src = img_tags[0]["src"] if img_tags else ""
+
+            for img in img_tags:
+                img.decompose()
+
+            # TODO: remove img from description
+
             if is_retweet and not self.include_retweets:
                 continue
 
@@ -31,16 +47,26 @@ class TwitterFeed(Feed):
             else:
                 output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted at <t:{post_date}> \n{post_url}"
 
-                # TODO: implement custom embed
-                # output = discord_embed({
-                #     "feed_owner": feed_owner_accountname,
-                #     "feed_owner_link": feed_owner_link,
-                #     "post_title": feed_owner,
-                #     "post_url": post_url,
-                #     "post_description": "Lorem Ipsum",
-                #     "enclosure": "",
-                #     "post_date": str(item.get_pubdate()),
-                # })
+            output = [
+                {
+                    "author": {
+                        "name": feed_owner_accountname,
+                        "url": feed_owner_link
+                    },
+                    "title": f"{feed_owner_accountname} retweeted {post_author}" if is_retweet else f"Tweet by {feed_owner_accountname}",
+                    "url": post_url,
+                    "description": html2text(str(soup)),
+                    "color": feed_color,
+                    "type": "image",  # required for images with no extension
+                    "image": {
+                        "url": img_src
+                    },
+                    "thumbnail": {
+                        "url": feed_owner_avatar
+                    },
+                    "timestamp": str(item.get_pubdate()),
+                }
+            ]
 
             self.final_items_to_be_posted.append(output)
 

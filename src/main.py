@@ -24,7 +24,7 @@ def main():
             )
             feed.load()
             timestamps.filter_out_old_posts(feed)
-            Sender(feed).send()
+            Sender(feed).send_json()
             timestamps.update(feed)
         except Exception as e:
             tb = traceback.TracebackException.from_exception(e).stack[-1]
