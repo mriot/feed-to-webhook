@@ -4,6 +4,7 @@ from twitter_feed import TwitterFeed
 from rss_feed import RssFeed
 from timestamps import Timestamps
 from file_handler import YamlFile
+import traceback
 
 
 def main():
@@ -23,8 +24,10 @@ def main():
             Sender(feed).send()
             timestamps.update(feed)
         except Exception as e:
-            print(e)
-            requests.post(CONFIG.get("error_webhook"), {"content": f"Error {str(e)} while fetching twitter feed {tfeed['url']}"})
+            tb = traceback.TracebackException.from_exception(e).stack[-1]
+            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'\n-> While processing feed {tfeed['url']}"
+            print(err)
+            requests.post(CONFIG.get("error_webhook"), {"content": err})
 
     # rss
     for rfeed in CONFIG.get("rss_feeds", []):
@@ -40,8 +43,10 @@ def main():
             Sender(feed).send_json()
             timestamps.update(feed)
         except Exception as e:
-            print(e)
-            requests.post(CONFIG.get("error_webhook"), {"content": f"Error {str(e)} while fetching RSS feed {rfeed['url']}"})
+            tb = traceback.TracebackException.from_exception(e).stack[-1]
+            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'\n-> While processing feed {tfeed['url']}"
+            print(err)
+            requests.post(CONFIG.get("error_webhook"), {"content": err})
 
     timestamps.write()
 
