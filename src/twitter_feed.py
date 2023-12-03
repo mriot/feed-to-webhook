@@ -1,6 +1,5 @@
 from urllib.parse import urlparse, urlunparse
 from feed import Feed
-from discord_embed import discord_embed
 from html2text import html2text
 from bs4 import BeautifulSoup
 
@@ -15,59 +14,55 @@ class TwitterFeed(Feed):
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # -> @username
         feed_owner_link = f"https://twitter.com/{feed_owner_accountname.replace('@', '')}"
         feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
-        feed_color = int(str(self.feed_data_dict.feed.get("color") or "1DA1F2"), 16)
+        feed_color = int(str(self.feed_data_dict.feed.get("embed_color") or "1DA1F2"), 16)
 
         for item in self.feed_items[:5]:
             post_author = item.item_root.get("author")  # @username
-            post_author_url = f"https://twitter.com/{post_author.replace('@', '')}" if post_author else ""
+            # post_author_url = f"https://twitter.com/{post_author.replace('@', '')}" if post_author else ""
             post_url = item.item_root.get("link", "")
-            post_url = urlunparse(urlparse(post_url)._replace(netloc="fxtwitter.com"))  # enables an embed view for twitter posts
-            # TODO: differntiate between platforms (timestamp)
-            # post_date = item.get_pubdate().strftime("%b %d, %Y %H:%M:%S")
-            post_date = int(item.get_pubdate().timestamp())  # used with special discord syntax <t:timestamp>
-            is_retweet = feed_owner.find(post_author) == -1 if feed_owner and post_author else False
-
-            post_title = item.item_root.get("title")
+            post_url = urlunparse(urlparse(post_url)._replace(netloc="twitter.com"))
             post_description = item.item_root.get("description")
-
-            soup = BeautifulSoup(post_description, "html.parser")
-            img_tags = soup.find_all("img")
-            img_src = img_tags[0]["src"] if img_tags else ""
-
-            for img in img_tags:
-                img.decompose()
-
-            # TODO: remove img from description
+            is_retweet = feed_owner.find(post_author) == -1 if feed_owner and post_author else False
 
             if is_retweet and not self.include_retweets:
                 continue
 
-            if is_retweet:
-                output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_url}>) at <t:{post_date}> \n{post_url}"
-            else:
-                output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted at <t:{post_date}> \n{post_url}"
+            # extract image(s) from description - we pass them as part of embed
+            soup = BeautifulSoup(post_description, "html.parser")
+            img_tags = soup.find_all("img")
+            img_src = img_tags[0]["src"] if img_tags else ""
 
-            output = [
+            # remove all images from text
+            for img in img_tags:
+                img.decompose()
+
+            embed = [
                 {
+                    "type": "article",
+                    "color": feed_color,
                     "author": {
                         "name": feed_owner_accountname,
                         "url": feed_owner_link
                     },
-                    "title": f"{feed_owner_accountname} retweeted {post_author}" if is_retweet else f"Tweet by {feed_owner_accountname}",
-                    "url": post_url,
-                    "description": html2text(str(soup)),
-                    "color": feed_color,
-                    "type": "image",  # required for images with no extension
-                    "image": {
-                        "url": img_src
-                    },
                     "thumbnail": {
                         "url": feed_owner_avatar
+                    },
+                    "title": f"Tweet by {post_author}",
+                    "url": post_url,
+                    "description": html2text(str(soup)),
+                    "fields": [
+                        {
+                            "name": "",
+                            "value": f"———\nretweeted by {feed_owner_accountname}" if is_retweet else "",
+                        }
+                    ],
+                    "image": {
+                        "url": img_src
                     },
                     "timestamp": str(item.get_pubdate()),
                 }
             ]
 
-            self.final_items_to_be_posted.append(output)
+            self.final_items_to_be_posted.append(embed)
 
         return self
