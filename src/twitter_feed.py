@@ -5,36 +5,53 @@ from bs4 import BeautifulSoup
 
 
 class TwitterFeed(Feed):
-    def __init__(self, url, webhooks, include_retweets=True):
+    def __init__(self, url, webhooks, include_retweets=True, redirect_domain=None):
         super().__init__(url, webhooks)
         self.include_retweets = include_retweets
+        self.redirect_domain = redirect_domain
 
     def prepare_content(self):
         feed_owner = self.feed_data_dict.feed.get("title", "[unknown]")  # -> username / @username
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # -> @username
-        feed_owner_link = f"https://twitter.com/{feed_owner_accountname.replace('@', '')}"
+        feed_owner_link = self.feed_data_dict.feed.get("link")
+        if self.redirect_domain:
+            feed_owner_link = urlunparse(urlparse(feed_owner_link)._replace(netloc=self.redirect_domain))
         feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
         feed_color = int(str(self.feed_data_dict.feed.get("embed_color") or "1DA1F2"), 16)
 
         for item in self.feed_items[:5]:
             post_author = item.item_root.get("author")  # @username
-            # post_author_url = f"https://twitter.com/{post_author.replace('@', '')}" if post_author else ""
             post_url = item.item_root.get("link", "")
-            post_url = urlunparse(urlparse(post_url)._replace(netloc="twitter.com"))
+            if self.redirect_domain:
+                post_url = urlunparse(urlparse(post_url)._replace(netloc=self.redirect_domain))
             post_description = item.item_root.get("description")
             is_retweet = feed_owner.find(post_author) == -1 if feed_owner and post_author else False
 
             if is_retweet and not self.include_retweets:
                 continue
 
-            # extract image(s) from description - we pass them as part of embed
             soup = BeautifulSoup(post_description, "html.parser")
-            img_tags = soup.find_all("img")
-            img_src = img_tags[0]["src"] if img_tags else ""
 
-            # remove all images from text
-            for img in img_tags:
-                img.decompose()
+            # extract first image src from description - we pass it later as part of embed
+            img_tag = soup.find("img")
+            img_src = img_tag["src"] if img_tag else ""
+
+            if self.redirect_domain:
+                # replace links from the current nitter instance in description
+                feed_domain = urlparse(self.feed_data_dict.feed.get("link")).netloc
+                for a_tag in soup.find_all("a"):
+                    url = urlparse(a_tag["href"])
+                    text = a_tag.text
+                    if url.netloc == feed_domain:
+                        a_tag["href"] = urlunparse(url._replace(netloc=self.redirect_domain))
+                        a_tag.string = text.replace(url.netloc, self.redirect_domain)
+
+            # remove certain tags from description before transforming to markdown
+            # <hr> seems to be used in a 'quoting tweet'
+            tags_to_remove = ["img", "hr"]
+            for tag_name in tags_to_remove:
+                for tag in soup.find_all(tag_name):
+                    tag.decompose()
 
             embed = [
                 {
