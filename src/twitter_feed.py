@@ -38,7 +38,7 @@ class TwitterFeed(Feed):
 
             embed = [
                 {
-                    "type": "article",
+                    "type": "image",  # required for images without extension ¯\_(ツ)_/¯
                     "color": feed_color,
                     "author": {
                         "name": feed_owner_accountname,
