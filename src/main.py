@@ -20,7 +20,8 @@ def main():
             feed = TwitterFeed(
                 tfeed.get("url"),
                 tfeed.get("webhooks"),
-                tfeed.get("include_retweets")
+                tfeed.get("include_retweets"),
+                tfeed.get("redirect_domain"),
             )
             feed.load()
             timestamps.filter_out_old_posts(feed)
