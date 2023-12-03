@@ -40,7 +40,7 @@ The config is divided into three main sections: `rss_feeds`, `twitter_feeds`, an
 - `webhooks`: A list of webhook URLs. When a new tweet is found, a message will be sent to each of these webhooks.
 - `embed_color` [**optional**]: The color to be used for the embed in the Discord message. This should be a hexadecimal color code **without** `#`. Default: `1DA1F2` (twitter blue).
 - `include_retweets` [**optional**]: A boolean value that determines whether retweets should be included. Default: `true`.
-- `redirect_domain` [**optional**]: A string value like *twitter.com* which will replace all nitter instance links. Default: `None`.
+- `redirect_domain` [**optional**]: A string value like *nitter.net* or *twitter.com* which will replace all nitter instance links. Default: `None`.
   - ⚠ Make sure that the domain is valid. There's no validation check for this.
 
 #### `error_webhook`
