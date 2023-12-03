@@ -5,8 +5,9 @@ from bs4 import BeautifulSoup
 
 
 class TwitterFeed(Feed):
-    def __init__(self, url, webhooks, include_retweets=True, redirect_domain=None):
+    def __init__(self, url, webhooks, embed_color, include_retweets=True, redirect_domain=None):
         super().__init__(url, webhooks)
+        self.embed_color = embed_color
         self.include_retweets = include_retweets
         self.redirect_domain = redirect_domain
 
@@ -17,7 +18,7 @@ class TwitterFeed(Feed):
         if self.redirect_domain:
             feed_owner_link = urlunparse(urlparse(feed_owner_link)._replace(netloc=self.redirect_domain))
         feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
-        feed_color = int(str(self.feed_data_dict.feed.get("embed_color") or "1DA1F2"), 16)
+        feed_color = int(str(self.embed_color or "1DA1F2"), 16)
 
         for item in self.feed_items[:5]:
             post_author = item.item_root.get("author")  # @username
