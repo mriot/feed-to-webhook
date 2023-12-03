@@ -7,7 +7,6 @@ rss_feeds:
   - url: https://example.com/rss2.xml
     webhooks:
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
-    embed_color: fe0000
 
 
 twitter_feeds:
@@ -16,6 +15,8 @@ twitter_feeds:
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
     include_retweets: true
+    embed_color: fe0000
+    redirect_domain: twitter.com
 
 
 error_webhook: https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz

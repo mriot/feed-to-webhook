@@ -32,17 +32,20 @@ The config is divided into three main sections: `rss_feeds`, `twitter_feeds`, an
 
 - `url`: URL of the RSS feed.
 - `webhooks`: A list of webhook URLs. When a new item is found, a message will be sent to each of these webhooks.
-- `embed_color`: The color to be used for the embed in the Discord message. This should be a hexadecimal color code **without** `#`.
+- `embed_color` [**optional**]: The color to be used for the embed in the Discord message. This should be a hexadecimal color code **without** `#`. Default: `738adb` (discord blue).
 
 #### `twitter_feeds`
 
 - `url`: URL of the Twitter feed.
 - `webhooks`: A list of webhook URLs. When a new tweet is found, a message will be sent to each of these webhooks.
-- `include_retweets`: A boolean value that determines whether retweets should be included.
+- `embed_color` [**optional**]: The color to be used for the embed in the Discord message. This should be a hexadecimal color code **without** `#`. Default: `1DA1F2` (twitter blue).
+- `include_retweets` [**optional**]: A boolean value that determines whether retweets should be included. Default: `true`.
+- `redirect_domain` [**optional**]: A string value like *twitter.com* which will replace all nitter instance links. Default: `None`.
+  - ⚠ Make sure that the domain is valid. There's no validation check for this.
 
 #### `error_webhook`
 
-- A single webhook URL. If an error occurs while processing the feeds, a message will be sent to this webhook.
+- A single webhook URL. If an error occurs, a message will be sent to this webhook.
 
 </details>
 
@@ -58,7 +61,6 @@ rss_feeds:
   - url: https://example.com/rss2.xml
     webhooks:
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
-    embed_color: fe0000
 
 
 twitter_feeds:
@@ -67,6 +69,8 @@ twitter_feeds:
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
     include_retweets: true
+    embed_color: fe0000
+    redirect_domain: twitter.com
 
 
 error_webhook: https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
@@ -78,8 +82,6 @@ error_webhook: https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstu
 
 Since Twitter.com doesn't offer (free) RSS feeds, you could use a community-run [Nitter](https://github.com/zedeus/nitter) instance instead. You can find a list of instances here <https://status.d420.de/>.  
 
-Some platforms, like Discord or Telegram, don't show previews for Twitter links. But there's a cool service called [FixTweet](https://github.com/FixTweet/FixTweet) that can help with that.
-
 > These public nitter instances shouldn't be used for scraping, as mentioned here <https://status.d420.de/about#api>.  
 > If you plan to use this script on a larger scale, you might want to think about hosting your own nitter instance.
 
@@ -90,7 +92,6 @@ This script supports various RSS and Atom versions thanks to [feedparser](https:
 ## Resources
 
 - Discord Webhooks guide <https://birdie0.github.io/discord-webhooks-guide/>
-- FixTweet <https://github.com/FixTweet/FixTweet>
 - Nitter Instance Uptime & Health <https://status.d420.de/>
 - Crontab Guru <https://crontab.guru/>
 
