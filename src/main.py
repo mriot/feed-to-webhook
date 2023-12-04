@@ -30,7 +30,7 @@ def main():
             timestamps.update(feed)
         except Exception as e:
             tb = traceback.TracebackException.from_exception(e).stack[-1]
-            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'\n-> While processing feed {tfeed['url']}"
+            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
             print(err)
             requests.post(CONFIG.get("error_webhook"), {"content": err})
 
@@ -49,7 +49,7 @@ def main():
             timestamps.update(feed)
         except Exception as e:
             tb = traceback.TracebackException.from_exception(e).stack[-1]
-            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'\n-> While processing feed {tfeed['url']}"
+            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
             print(err)
             requests.post(CONFIG.get("error_webhook"), {"content": err})
 
