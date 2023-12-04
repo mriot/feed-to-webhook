@@ -26,27 +26,35 @@ More options can be found in the config documentation below.
 
 <br>
 
-The config is divided into three main sections: `twitter_feeds`, `rss_feeds` and `error_webhook`.  
-Only `url` and `webhooks` are required for each feed.
+**Only `url` and `webhooks` are required for each feed.**
 
-#### `twitter_feeds`
+#### Twitter Feeds
 
-- `url`: URL of the Twitter feed.
-- `webhooks`: A list of webhook URLs. When a new tweet is found, a message will be sent to each of these webhooks.
-- `embed_color` [**optional**]: The color to be used for the embed in the Discord message. This should be a hexadecimal color code **without** `#`. Default: `1DA1F2` (twitter blue).
-- `exclude_retweets` [**optional**]: A boolean value that determines whether retweets should be excluded. Default: `false`.
-- `override_domain` [**optional**]: Set to `False` to disable overriding or provide a domain name, such as `nitter.net`. Default: `twitter.com`.
-  - When set to `False`, this option will preserve the original links to the Nitter instance that provides your feed.
+| Parameter          | Description                                           | Default                 |
+| ------------------ | ----------------------------------------------------- | ----------------------- |
+| `url`              | URL of the Twitter feed.                              | -                       |
+| `webhooks`         | List of webhook URLs for new tweets.                  | -                       |
+| `embed_color`      | Color for Discord embed (hex code, without `#`).      | `1DA1F2` (twitter blue) |
+| `exclude_retweets` | Exclude retweets from being sent (boolean).           | `false`                 |
+| `override_domain`  | Disable or set domain for links (e.g., `nitter.net`). | `twitter.com`           |
 
-#### `rss_feeds`
+> Setting `override_domain` to `False` will preserve the original links to the Nitter instance that provides your feed.
 
-- `url`: URL of the RSS feed.
-- `webhooks`: A list of webhook URLs. When a new item is found, a message will be sent to each of these webhooks.
-- `embed_color` [**optional**]: The color to be used for the embed in the Discord message. This should be a hexadecimal color code **without** `#`. Default: `738adb` (discord blue).
+#### RSS Feeds
 
-#### `error_webhook`
+| Parameter     | Description                                      | Default                 |
+| ------------- | ------------------------------------------------ | ----------------------- |
+| `url`         | URL of the RSS feed.                             | -                       |
+| `webhooks`    | List of webhook URLs for new posts.              | -                       |
+| `embed_color` | Color for Discord embed (hex code, without `#`). | `738adb` (discord blue) |
 
-- A single webhook URL. If an error occurs, a message will be sent to this webhook.
+#### Misc options
+
+| Parameter       | Description                                                                       | Default |
+| --------------- | --------------------------------------------------------------------------------- | ------- |
+| `error_webhook` | A single webhook URL. If an error occurs, a message will be sent to this webhook. | -       |
+
+<br>
 
 </details>
 
@@ -69,9 +77,9 @@ twitter_feeds:
     webhooks:
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
-    exclude_retweets: true
+    exclude_retweets: true # retweets wont be posted
     embed_color: fe0000
-    override_domain: "nitter.net"
+    override_domain: "nitter.net" # links will point to nitter.net
 
 
 error_webhook: https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
