@@ -40,8 +40,8 @@ def main():
             feed = RssFeed(
                 rfeed.get("url"),
                 rfeed.get("webhooks"),
-                embed_color=rfeed.get("embed_color"),
-                summarize=rfeed.get("summarize")
+                rfeed.get("embed_color"),
+                rfeed.get("summarize")  # TODO: implement
             )
             feed.load()
             timestamps.filter_out_old_posts(feed)
