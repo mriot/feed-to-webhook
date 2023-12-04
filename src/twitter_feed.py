@@ -5,28 +5,27 @@ from bs4 import BeautifulSoup
 
 
 class TwitterFeed(Feed):
-    def __init__(self, url, webhooks, embed_color, include_retweets=True, redirect_domain=None):
+    def __init__(self, url, webhooks, embed_color, include_retweets, redirect_domain):
         super().__init__(url, webhooks)
-        self.embed_color = embed_color
+        self.embed_color = int(embed_color if embed_color is not None else "1DA1F2", 16)
         self.include_retweets = include_retweets
-        self.redirect_domain = redirect_domain
+        self.redirect_domain = "twitter.com" if redirect_domain is None else redirect_domain
 
     def prepare_content(self):
         feed_owner = self.feed_data_dict.feed.get("title", "[unknown]")  # -> username / @username
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # -> @username
+        feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
         feed_owner_link = self.feed_data_dict.feed.get("link")
         if self.redirect_domain:
             feed_owner_link = urlunparse(urlparse(feed_owner_link)._replace(netloc=self.redirect_domain))
-        feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
-        feed_color = int(str(self.embed_color or "1DA1F2"), 16)
 
         for item in self.feed_items[:5]:
             post_author = item.item_root.get("author")  # @username
+            post_description = item.item_root.get("description")
+            is_retweet = feed_owner.find(post_author) == -1
             post_url = item.item_root.get("link", "")
             if self.redirect_domain:
                 post_url = urlunparse(urlparse(post_url)._replace(netloc=self.redirect_domain))
-            post_description = item.item_root.get("description")
-            is_retweet = feed_owner.find(post_author) == -1 if feed_owner and post_author else False
 
             if is_retweet and not self.include_retweets:
                 continue
@@ -37,8 +36,8 @@ class TwitterFeed(Feed):
             img_tag = soup.find("img")
             img_src = img_tag["src"] if img_tag else ""
 
+            # replace links from the current nitter instance in description
             if self.redirect_domain:
-                # replace links from the current nitter instance in description
                 feed_domain = urlparse(self.feed_data_dict.feed.get("link")).netloc
                 for a_tag in soup.find_all("a"):
                     url = urlparse(a_tag["href"])
@@ -57,7 +56,7 @@ class TwitterFeed(Feed):
             embed = [
                 {
                     "type": "image",  # required for images without extension ¯\_(ツ)_/¯
-                    "color": feed_color,
+                    "color": self.embed_color,
                     "author": {
                         "name": feed_owner_accountname,
                         "url": feed_owner_link
