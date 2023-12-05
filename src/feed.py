@@ -38,6 +38,9 @@ class Feed(ABC):
         self._make_feed_items()
         return self
 
+    def remove_old_posts(self, timestamps):
+        self.feed_items = [post for post in self.feed_items if post.get_pubdate() > timestamps.get(self.url)]
+
     def _make_feed_items(self):
         items = self.feed_data_dict.get("items", [])
         self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
