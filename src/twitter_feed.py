@@ -1,47 +1,85 @@
 from urllib.parse import urlparse, urlunparse
 from feed import Feed
-from discord_embed import discord_embed
+from html2text import html2text
+from bs4 import BeautifulSoup
 
 
 class TwitterFeed(Feed):
-    def __init__(self, url, webhooks, include_retweets=True):
+    def __init__(self, url, webhooks, embed_color, exclude_retweets, override_domain):
         super().__init__(url, webhooks)
-        self.include_retweets = include_retweets
+        self.embed_color = int(embed_color if embed_color is not None else "1DA1F2", 16)
+        self.exclude_retweets = exclude_retweets
+        self.override_domain = "twitter.com" if override_domain is None else override_domain
 
     def prepare_content(self):
         feed_owner = self.feed_data_dict.feed.get("title", "[unknown]")  # -> username / @username
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # -> @username
-        feed_owner_link = f"https://twitter.com/{feed_owner_accountname.replace('@', '')}"
+        feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
+        feed_owner_link = self.feed_data_dict.feed.get("link")
+        if self.override_domain:
+            feed_owner_link = urlunparse(urlparse(feed_owner_link)._replace(netloc=self.override_domain))
 
         for item in self.feed_items[:5]:
             post_author = item.item_root.get("author")  # @username
-            post_author_url = f"https://twitter.com/{post_author.replace('@', '')}" if post_author else ""
+            post_description = item.item_root.get("description")
+            is_retweet = feed_owner.find(post_author) == -1
             post_url = item.item_root.get("link", "")
-            post_url = urlunparse(urlparse(post_url)._replace(netloc="fxtwitter.com"))  # enables an embed view for twitter posts
-            # TODO: differntiate between platforms (timestamp)
-            # post_date = item.get_pubdate().strftime("%b %d, %Y %H:%M:%S")
-            post_date = int(item.get_pubdate().timestamp())  # used with special discord syntax <t:timestamp>
-            is_retweet = feed_owner.find(post_author) == -1 if feed_owner and post_author else False
+            if self.override_domain:
+                post_url = urlunparse(urlparse(post_url)._replace(netloc=self.override_domain))
 
-            if is_retweet and not self.include_retweets:
+            if is_retweet and self.exclude_retweets:
                 continue
 
-            if is_retweet:
-                output = f"♻️ [{feed_owner_accountname}](<{feed_owner_link}>) retweeted [{post_author}](<{post_author_url}>) at <t:{post_date}> \n{post_url}"
-            else:
-                output = f"📢 [{feed_owner_accountname}](<{feed_owner_link}>) tweeted at <t:{post_date}> \n{post_url}"
+            soup = BeautifulSoup(post_description, "html.parser")
 
-                # TODO: implement custom embed
-                # output = discord_embed({
-                #     "feed_owner": feed_owner_accountname,
-                #     "feed_owner_link": feed_owner_link,
-                #     "post_title": feed_owner,
-                #     "post_url": post_url,
-                #     "post_description": "Lorem Ipsum",
-                #     "enclosure": "",
-                #     "post_date": str(item.get_pubdate()),
-                # })
+            # extract first image src from description - we pass it later as part of embed
+            img_tag = soup.find("img")
+            img_src = img_tag["src"] if img_tag else ""
 
-            self.final_items_to_be_posted.append(output)
+            # replace links from the current nitter instance in description
+            if self.override_domain:
+                feed_domain = urlparse(self.feed_data_dict.feed.get("link")).netloc
+                for a_tag in soup.find_all("a"):
+                    url = urlparse(a_tag["href"])
+                    text = a_tag.text
+                    if url.netloc == feed_domain:
+                        a_tag["href"] = urlunparse(url._replace(netloc=self.override_domain))
+                        a_tag.string = text.replace(url.netloc, self.override_domain)
+
+            # remove certain tags from description before transforming to markdown
+            # <hr> seems to be used in a 'quoting tweet'
+            tags_to_remove = ["img", "hr"]
+            for tag_name in tags_to_remove:
+                for tag in soup.find_all(tag_name):
+                    tag.decompose()
+
+            embed = [
+                {
+                    "type": "image",  # required for images without extension ¯\_(ツ)_/¯
+                    "color": self.embed_color,
+                    "author": {
+                        "name": feed_owner_accountname,
+                        "url": feed_owner_link
+                    },
+                    "thumbnail": {
+                        "url": feed_owner_avatar
+                    },
+                    "title": f"Tweet by {post_author}",
+                    "url": post_url,
+                    "description": html2text(str(soup)),
+                    "fields": [
+                        {
+                            "name": "",
+                            "value": f"———\nretweeted by {feed_owner_accountname}" if is_retweet else "",
+                        }
+                    ],
+                    "image": {
+                        "url": img_src
+                    },
+                    "timestamp": str(item.get_pubdate()),
+                }
+            ]
+
+            self.final_items_to_be_posted.append(embed)
 
         return self

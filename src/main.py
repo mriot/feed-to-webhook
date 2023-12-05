@@ -20,15 +20,17 @@ def main():
             feed = TwitterFeed(
                 tfeed.get("url"),
                 tfeed.get("webhooks"),
-                tfeed.get("include_retweets")
+                tfeed.get("embed_color"),
+                tfeed.get("exclude_retweets"),
+                tfeed.get("override_domain"),
             )
             feed.load()
             timestamps.filter_out_old_posts(feed)
-            Sender(feed).send()
+            Sender(feed).send_json()
             timestamps.update(feed)
         except Exception as e:
             tb = traceback.TracebackException.from_exception(e).stack[-1]
-            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'\n-> While processing feed {tfeed['url']}"
+            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
             print(err)
             requests.post(CONFIG.get("error_webhook"), {"content": err})
 
@@ -38,8 +40,8 @@ def main():
             feed = RssFeed(
                 rfeed.get("url"),
                 rfeed.get("webhooks"),
-                embed_color=rfeed.get("embed_color"),
-                summarize=rfeed.get("summarize")
+                rfeed.get("embed_color"),
+                rfeed.get("summarize")  # TODO: implement
             )
             feed.load()
             timestamps.filter_out_old_posts(feed)
@@ -47,7 +49,7 @@ def main():
             timestamps.update(feed)
         except Exception as e:
             tb = traceback.TracebackException.from_exception(e).stack[-1]
-            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'\n-> While processing feed {tfeed['url']}"
+            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
             print(err)
             requests.post(CONFIG.get("error_webhook"), {"content": err})
 

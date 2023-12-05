@@ -22,4 +22,4 @@ class Sender:
             for webhook in self.feed.webhooks:
                 res = requests.post(webhook, json={"embeds": post}, headers={"Content-Type": "application/json"})
                 if res.status_code > 299:
-                    raise Exception(f"Webhook '{webhook}' responded with status code {res.status_code} and message '{res.reason}'")
+                    raise Exception(f"**Status code {res.status_code}** ({res.reason})\n**Feed**: {self.feed.url}\n**Webhook: **{webhook}\n**Payload**:\n```json\n{res.request.body}```")

@@ -2,7 +2,6 @@ rss_feeds:
   - url: https://example.com/rss.xml
     webhooks:
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
-    embed_color: fe0000
     
   - url: https://example.com/rss2.xml
     webhooks:
@@ -15,7 +14,9 @@ twitter_feeds:
     webhooks:
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
       - https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
-    include_retweets: true
+    exclude_retweets: true
+    embed_color: fe0000
+    override_domain: "nitter.net"
 
 
 error_webhook: https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz
