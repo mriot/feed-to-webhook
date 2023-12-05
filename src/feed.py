@@ -31,7 +31,6 @@ class Feed(ABC):
     def load(self):
         self.feed_data_dict = feedparser.parse(self.url)
 
-        # TODO
         if self.feed_data_dict.get("bozo_exception"):
             raise Exception(f"Malformed feed data {self.feed_data_dict.get('bozo_exception')}")
 
