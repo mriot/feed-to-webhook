@@ -22,10 +22,12 @@ class Feed(ABC):
         self.feed_data_dict = feedparser.FeedParserDict()
         self.feed_items = []
         self.latest_timestamp = None
-        self.final_items_to_be_posted = []  # populated by prepare_content()
+        self.final_items_to_be_posted = []  # populated by make_embeds()
+
+        # self.load()
 
     @abstractmethod
-    def prepare_content(self):
+    def make_embeds(self):
         return self
 
     def load(self):

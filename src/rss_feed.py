@@ -13,7 +13,7 @@ class RssFeed(Feed):
     def summarize_text(self):
         pass
 
-    def prepare_content(self):
+    def make_embeds(self):
         d = self.feed_data_dict
         feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
 

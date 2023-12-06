@@ -11,7 +11,7 @@ class TwitterFeed(Feed):
         self.exclude_retweets = exclude_retweets
         self.override_domain = "twitter.com" if override_domain is None else override_domain
 
-    def prepare_content(self):
+    def make_embeds(self):
         feed_owner = self.feed_data_dict.feed.get("title", "[unknown]")  # -> username / @username
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # -> @username
         feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
