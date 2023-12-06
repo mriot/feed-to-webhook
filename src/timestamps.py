@@ -21,7 +21,3 @@ class Timestamps:
 
     def write(self):
         self._timestamps_file.write(self._timestamps)
-
-    # DEPRECATED
-    def filter_out_old_posts(self, feed):
-        feed.feed_items = [post for post in feed.feed_items if post.get_pubdate() > self.get(feed.url)]
