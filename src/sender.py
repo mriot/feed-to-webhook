@@ -10,21 +10,17 @@ class Sender:
         self.feeds.append(feed)
 
     def sort_embeds(self):
-        # embeds = []
-        # for feed in self.feeds:
-        #     embeds.extend(feed.final_items_to_be_posted)
-        # embeds.sort(key=lambda x: x[0]['timestamp'])
-        # return embeds
-        embeds = []
+        sorted_embeds = []
         for feed in self.feeds:
-            embeds.extend({"feed": feed, "embeds": feed.final_items_to_be_posted})
-        embeds.sort(key=lambda x: x["feed"]['latest_timestamp'])
-        return embeds
+            for embed in feed.final_items_to_be_posted:
+                sorted_embeds.append({"embeds": embed, "feed": feed})
+        sorted_embeds.sort(key=lambda x: x["embeds"][0]['timestamp'])
+        return sorted_embeds
 
     def send_embeds(self):
-        for embed in self.sort_embeds():
-            for webhook in embed.feed.webhooks:
-                res = requests.post(webhook, json={"embeds": embed.embeds}, headers={"Content-Type": "application/json"})
+        for sorted_embeds in self.sort_embeds():
+            for webhook in sorted_embeds["feed"].webhooks:
+                res = requests.post(webhook, json={"embeds": sorted_embeds["embeds"]}, headers={"Content-Type": "application/json"})
 
                 # TODO - handle rate limit
                 if res.status_code == 429:
@@ -36,7 +32,7 @@ class Sender:
                         pass
 
                 if res.status_code > 299:
-                    raise Exception(f"**Status code {res.status_code}** ({res.reason})\n**Feed**: {embed.feed.url}\n**Webhook: **{webhook}\n**Payload**:\n```json\n{res.request.body}```")
+                    raise Exception(f"**Status code {res.status_code}** ({res.reason})\n**Feed**: {sorted_embeds.feed.url}\n**Webhook: **{webhook}\n**Payload**:\n```json\n{res.request.body}```")
 
     # DEPRECATED
     def send(self):
