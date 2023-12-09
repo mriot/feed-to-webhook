@@ -53,7 +53,7 @@ def main():
 
     sender.send_embeds()
 
-    # timestamps.write()
+    timestamps.write()
 
     END_TIME = time.time()
     print(f"Execution time: {round(END_TIME - START_TIME, 1)} seconds")
