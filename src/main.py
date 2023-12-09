@@ -18,6 +18,7 @@ def main():
     def process_feed(feed):
         try:
             feed.load()
+            timestamps.update(feed)
             feed.remove_old_posts(timestamps)
 
             if not feed.feed_items:
@@ -25,7 +26,6 @@ def main():
 
             feed.make_embeds()
             sender.add(feed)
-            timestamps.update(feed)
         except Exception as e:
             tb = traceback.TracebackException.from_exception(e).stack[-1]
             err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
