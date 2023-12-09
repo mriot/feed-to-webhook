@@ -18,8 +18,8 @@ def main():
     def process_feed(feed):
         try:
             feed.load()
-            timestamps.update(feed)
             feed.remove_old_posts(timestamps)
+            timestamps.update(feed)
 
             if not feed.feed_items:
                 return
