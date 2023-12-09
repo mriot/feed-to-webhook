@@ -1,3 +1,4 @@
+from dateutil.parser import parse
 import requests
 from feed import Feed
 
@@ -10,12 +11,12 @@ class Sender:
         self.feeds.append(feed)
 
     def sort_embeds(self):
-        sorted_embeds = []
+        embed_list = []
         for feed in self.feeds:
             for embed in feed.final_items_to_be_posted:
-                sorted_embeds.append({"embeds": embed, "feed": feed})
-        sorted_embeds.sort(key=lambda x: x["embeds"][0]['timestamp'])
-        return sorted_embeds
+                embed_list.append({"embeds": embed, "feed": feed})
+        embed_list.sort(key=lambda x: parse(x["feed"].latest_timestamp))
+        return embed_list
 
     def send_embeds(self):
         for sorted_embeds in self.sort_embeds():
