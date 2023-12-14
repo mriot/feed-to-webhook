@@ -34,7 +34,7 @@ class Feed(ABC):
         self.feed_data_dict = feedparser.parse(self.url)
 
         if self.feed_data_dict.get("bozo_exception"):
-            raise Exception(f"Malformed feed data for URL {self.url}\n'{self.feed_data_dict.get('bozo_exception')}'")
+            raise Exception(f"Failed to parse feed from URL {self.url}\n{self.feed_data_dict.get('bozo_exception')}")
 
         self.latest_timestamp = self.feed_data_dict.get("items", [])[0].get("published")
         self._make_feed_items()
