@@ -45,4 +45,6 @@ class Feed(ABC):
 
     def _make_feed_items(self):
         items = self.feed_data_dict.get("items", [])
+        if not items:
+            raise Exception(f"Failed to extract feed items from {self.url}")
         self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
