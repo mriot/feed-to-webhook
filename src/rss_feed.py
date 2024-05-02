@@ -13,20 +13,27 @@ class RssFeed(Feed):
         for item in reversed(self.feed_items[:5]):  # max items posted at once
             html = HtmlParser(item.description, "html.parser")
 
+            # TODO - might deprecate this
             # extract first image src from description (if any) - we pass it later as part of embed
             img_tag = html.find("img")
             img_src = img_tag.get("src") if isinstance(img_tag, Tag) else ""
 
-            if item.media:
-                img_src = item.media[0].get("url", img_src)
+            # TODO - multiple/all images?
+            # images = [img.get("src") for img in html.find_all("img")]
+
+            # TODO - check if we can somehow embed more than just images
+            if len(item.media) > 0:
+                for media in item.media:
+                    if "image" in media.get("type", ""):
+                        img_src = media.get("url", "")
+                    else:
+                        html.append(media.get("url", ""))
 
             # remove "http://" and "https://" from the link text
             # (discord does not support markdown links if their name contains http:// or https://)
             for link in html.find_all("a"):
                 if link.text.find("http://") or link.text.find("https://"):
-                    link.string = link.text.replace("http://", "").replace(
-                        "https://", ""
-                    )
+                    link.string = link.text.replace("http://", "").replace("https://", "")
 
             # remove certain html tags from description before transforming to markdown
             tags_to_remove = ["img"]
@@ -38,14 +45,16 @@ class RssFeed(Feed):
                 {
                     "type": "image",
                     "color": self.embed_color,
-                    # ----------------------------------
-                    "thumbnail": {"url": self.avatar_url},
-                    "author": {"name": self.title, "url": self.link},
-                    # ----------------------------------
-                    "title": item.title,
+                    "author": {
+                        "name": self.title,
+                        "url": self.link,
+                        "icon_url": self.avatar_url,
+                    },
+                    "title": item.title or "Link to post",
                     "url": item.link,
                     "description": html2md(str(html), bodywidth=0),
                     "image": {"url": img_src},
+                    "footer": {"text": self.generator},
                     "timestamp": str(item.pub_date),
                 }
             ]
