@@ -1,9 +1,8 @@
 import requests
 from sender import Sender
-from twitter_feed import TwitterFeed
 from rss_feed import RssFeed
 from timestamps import Timestamps
-from file_handler import YamlFile
+from file_handler import JsonFile
 import traceback
 import time
 
@@ -11,18 +10,24 @@ import time
 def main():
     START_TIME = time.time()
 
-    CONFIG = YamlFile("config.yaml", False).read()
+    config = JsonFile("config.json", False).read()
     timestamps = Timestamps()
     sender = Sender()
 
-    def process_feed(feed):
+    for feed_config in config.get("feeds", []):
+        feed = RssFeed(
+            feed_config.get("url"),
+            feed_config.get("webhooks"),
+            feed_config.get("embed_color"),
+        )
+
         try:
             feed.load()
             feed.remove_old_posts(timestamps)
             timestamps.update(feed)
 
             if not feed.feed_items:
-                return
+                continue
 
             feed.make_embeds()
             sender.add(feed)
@@ -30,26 +35,8 @@ def main():
             tb = traceback.TracebackException.from_exception(e).stack[-1]
             err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
             print(err)
-            requests.post(CONFIG.get("error_webhook"), {"content": err})
-
-    # twitter
-    for tfeed in CONFIG.get("twitter_feeds", []):
-        process_feed(TwitterFeed(
-            tfeed.get("url"),
-            tfeed.get("webhooks"),
-            tfeed.get("embed_color"),
-            tfeed.get("exclude_retweets"),
-            tfeed.get("override_domain"),
-        ))
-
-    # rss
-    for rfeed in CONFIG.get("rss_feeds", []):
-        process_feed(RssFeed(
-            rfeed.get("url"),
-            rfeed.get("webhooks"),
-            rfeed.get("embed_color"),
-            rfeed.get("summarize")  # TODO: implement
-        ))
+            if errhook := config.get("error_webhook"):
+                requests.post(errhook, {"content": err})
 
     sender.send_embeds()
 

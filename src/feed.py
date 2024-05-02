@@ -3,7 +3,7 @@ from dateutil.parser import parse
 import feedparser
 
 
-class FeedItem():
+class FeedItem:
     def __init__(self, item):
         self.item_root = item
 
@@ -22,9 +22,7 @@ class Feed(ABC):
         self.feed_data_dict = feedparser.FeedParserDict()
         self.feed_items = []
         self.latest_timestamp = None
-        self.final_items_to_be_posted = []  # populated by make_embeds()
-
-        # self.load()
+        self.new_feed_items = []  # populated by make_embeds()
 
     @abstractmethod
     def make_embeds(self):
@@ -34,17 +32,23 @@ class Feed(ABC):
         self.feed_data_dict = feedparser.parse(self.url)
 
         if self.feed_data_dict.get("bozo_exception"):
-            raise Exception(f"Failed to parse feed from URL {self.url}\n{self.feed_data_dict.get('bozo_exception')}")
+            raise Exception(
+                f"Failed to parse feed from URL {self.url}\n{self.feed_data_dict.get('bozo_exception')}"
+            )
 
-        self.latest_timestamp = self.feed_data_dict.get("items", [])[0].get("published")
-        self._make_feed_items()
+        self.feed_items = self._make_feed_items()
+        self.latest_timestamp = max((item.get_pubdate()) for item in self.feed_items)
         return self
 
     def remove_old_posts(self, timestamps):
-        self.feed_items = [post for post in self.feed_items if post.get_pubdate() > timestamps.get(self.url)]
+        self.feed_items = [
+            post
+            for post in self.feed_items
+            if post.get_pubdate() > timestamps.get(self.url)
+        ]
 
     def _make_feed_items(self):
         items = self.feed_data_dict.get("items", [])
         if not items:
             raise Exception(f"Failed to extract feed items from {self.url}")
-        self.feed_items = [FeedItem(item) for item in reversed(items[:5])]
+        return [FeedItem(item) for item in reversed(items[:10])]

@@ -1,21 +1,24 @@
 import os
 import sys
-import yaml
+import json
 
 
-class YamlFile:
+class JsonFile:
     def __init__(self, file_name, create=True):
-        self.file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_name)
+        self.file_path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), file_name
+        )
 
         if create and not os.path.exists(self.file_path):
-            open(self.file_path, "a").close()
+            with open(self.file_path, "w") as file:
+                json.dump({}, file, ensure_ascii=False, indent=4)
 
     def read(self):
         try:
             with open(self.file_path, "r") as file:
-                return yaml.safe_load(file)
-        except yaml.YAMLError as e:
-            print(f"Error parsing YAML file: {e}")
+                return json.load(file) or {}
+        except json.JSONDecodeError as e:
+            print(f"Error parsing JSON file '{self.file_path}': {e}")
             sys.exit(1)
         except FileNotFoundError as e:
             print(f"File {e} not found")
@@ -23,4 +26,4 @@ class YamlFile:
 
     def write(self, data):
         with open(self.file_path, "w") as file:
-            yaml.safe_dump(data, file, sort_keys=False, width=1000, indent=4, allow_unicode=True)
+            json.dump(data, file, ensure_ascii=False, indent=4)

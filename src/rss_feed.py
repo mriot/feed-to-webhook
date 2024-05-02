@@ -4,18 +4,13 @@ from bs4 import BeautifulSoup
 
 
 class RssFeed(Feed):
-    def __init__(self, url, webhooks, embed_color, summarize):
+    def __init__(self, url, webhooks, embed_color):
         super().__init__(url, webhooks)
         self.embed_color = int(embed_color if embed_color is not None else "738adb", 16)
-        self.summarize = summarize
-
-    # TODO: implement
-    def summarize_text(self):
-        pass
 
     def make_embeds(self):
         d = self.feed_data_dict
-        feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
+        avatar = self.feed_data_dict.feed.get("image", {}).get("url")
 
         for item in self.feed_items[:5]:
             soup = BeautifulSoup(item.item_root.get("description"), "html.parser")
@@ -24,7 +19,7 @@ class RssFeed(Feed):
             img_tag = soup.find("img")
             img_src = img_tag["src"] if img_tag else ""
 
-            # remove certain tags from description before transforming to markdown
+            # remove certain html tags from description before transforming to markdown
             tags_to_remove = ["img"]
             for tag_name in tags_to_remove:
                 for tag in soup.find_all(tag_name):
@@ -34,23 +29,16 @@ class RssFeed(Feed):
                 {
                     "type": "image",  # required for images without extension ¯\_(ツ)_/¯
                     "color": self.embed_color,
-                    "author": {
-                        "name": d.feed.get("title"),
-                        "url": d.feed.get("link")
-                    },
-                    "thumbnail": {
-                        "url": feed_owner_avatar
-                    },
+                    "author": {"name": d.feed.get("title"), "url": d.feed.get("link")},
+                    "thumbnail": {"url": avatar},
                     "title": item.item_root.get("title"),
                     "url": item.item_root.get("link"),
                     "description": html2text(str(soup)),
-                    "image": {
-                        "url": img_src or item.item_root.get("enclosure")
-                    },
+                    "image": {"url": img_src or item.item_root.get("enclosure")},
                     "timestamp": str(item.get_pubdate()),
                 }
             ]
 
-            self.final_items_to_be_posted.append(embed)
+            self.new_feed_items.append(embed)
 
         return self
