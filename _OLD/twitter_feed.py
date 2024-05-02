@@ -9,15 +9,21 @@ class TwitterFeed(Feed):
         super().__init__(url, webhooks)
         self.embed_color = int(embed_color if embed_color is not None else "1DA1F2", 16)
         self.exclude_retweets = exclude_retweets
-        self.override_domain = "twitter.com" if override_domain is None else override_domain
+        self.override_domain = (
+            "twitter.com" if override_domain is None else override_domain
+        )
 
     def make_embeds(self):
-        feed_owner = self.feed_data_dict.feed.get("title", "[unknown]")  # -> username / @username
+        feed_owner = self._feed_data_dict.feed.get(
+            "title", "[unknown]"
+        )  # -> username / @username
         feed_owner_accountname = feed_owner.split(" / ")[-1]  # -> @username
-        feed_owner_avatar = self.feed_data_dict.feed.get("image", {}).get("url")
-        feed_owner_link = self.feed_data_dict.feed.get("link")
+        feed_owner_avatar = self._feed_data_dict.feed.get("image", {}).get("url")
+        feed_owner_link = self._feed_data_dict.feed.get("link")
         if self.override_domain:
-            feed_owner_link = urlunparse(urlparse(feed_owner_link)._replace(netloc=self.override_domain))
+            feed_owner_link = urlunparse(
+                urlparse(feed_owner_link)._replace(netloc=self.override_domain)
+            )
 
         for item in self.feed_items[:5]:
             post_author = item.item_root.get("author")  # @username
@@ -25,7 +31,9 @@ class TwitterFeed(Feed):
             is_retweet = feed_owner.find(post_author) == -1
             post_url = item.item_root.get("link", "")
             if self.override_domain:
-                post_url = urlunparse(urlparse(post_url)._replace(netloc=self.override_domain))
+                post_url = urlunparse(
+                    urlparse(post_url)._replace(netloc=self.override_domain)
+                )
 
             if is_retweet and self.exclude_retweets:
                 continue
@@ -38,12 +46,14 @@ class TwitterFeed(Feed):
 
             # replace links from the current nitter instance in description
             if self.override_domain:
-                feed_domain = urlparse(self.feed_data_dict.feed.get("link")).netloc
+                feed_domain = urlparse(self._feed_data_dict.feed.get("link")).netloc
                 for a_tag in soup.find_all("a"):
                     url = urlparse(a_tag["href"])
                     text = a_tag.text
                     if url.netloc == feed_domain:
-                        a_tag["href"] = urlunparse(url._replace(netloc=self.override_domain))
+                        a_tag["href"] = urlunparse(
+                            url._replace(netloc=self.override_domain)
+                        )
                         a_tag.string = text.replace(url.netloc, self.override_domain)
 
             # remove certain tags from description before transforming to markdown
@@ -57,25 +67,22 @@ class TwitterFeed(Feed):
                 {
                     "type": "image",  # required for images without extension ¯\_(ツ)_/¯
                     "color": self.embed_color,
-                    "author": {
-                        "name": feed_owner_accountname,
-                        "url": feed_owner_link
-                    },
-                    "thumbnail": {
-                        "url": feed_owner_avatar
-                    },
+                    "author": {"name": feed_owner_accountname, "url": feed_owner_link},
+                    "thumbnail": {"url": feed_owner_avatar},
                     "title": f"Tweet by {post_author}",
                     "url": post_url,
                     "description": html2text(str(soup)),
                     "fields": [
                         {
                             "name": "",
-                            "value": f"———\nretweeted by {feed_owner_accountname}" if is_retweet else "",
+                            "value": (
+                                f"———\nretweeted by {feed_owner_accountname}"
+                                if is_retweet
+                                else ""
+                            ),
                         }
                     ],
-                    "image": {
-                        "url": img_src
-                    },
+                    "image": {"url": img_src},
                     "timestamp": str(item.get_pubdate()),
                 }
             ]

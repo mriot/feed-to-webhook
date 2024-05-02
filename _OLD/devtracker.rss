@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+	<channel>
+		<title>Dev Tracker</title>
+		<link>https://en-forum.guildwars2.com/discover/6/</link>
+		<description>Guild Wars 2 Forums - Dev Tracker</description>
+		<language>en</language>
+		<item>
+			<title>WTF is Anet doing to WvW?</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145496-wtf-is-anet-doing-to-wvw/?do=findComment&comment=2112661]]>
+			</link>
+			<description>Hey all! I'd like to make sure I understand and hear more about some of the feedback, so I've
+				quoted a few posts below and asked the authors to expand on their thoughts.
+
+
+
+
+
+				Since the changes to Siege Dampener and Siege Disruptor were in separate updates than the wall/gate
+				repair change, are those changes you think should be reverted in general, or do you feel they're no
+				longer valid changes alongside the other changes made in the last patch?
+
+
+
+
+
+
+
+				For the lowered stats on the Keep Aura, you mentioned that you feel it was overkill, but didn't say
+				that's one of the changes that should be reverted. Do you feel it should be, or do you think it should
+				be left alone?
+
+
+
+
+
+				Can you elaborate on your thoughts a bit? I'm interested in what specific changes you're thinking of and
+				why they aren't working for you.
+
+
+
+
+
+				Since catapults have always been usable on inner and outer walls, are you feeling that the recent
+				changes caused that to become an issue or do you feel that it's a long-running problem aside from more
+				recent updates? Can you talk more about how it feels like a problem?
+
+
+
+
+
+
+
+				For defensive siege not feeling relevant, do you feel that this is fully related to the most recent
+				update?
+
+
+
+
+
+
+
+				As far as the suggestion of making some types of siege easier to destroy - namely catapults and flame
+				rams - do you feel that the changes to siege disruptors aid this in any way? Is the increased damage to
+				siege from disruptors making a difference in your eyes?
+
+
+
+
+
+
+
+				Are the changes to the keep lords just not very impactful, or do you feel as though they've actually
+				worsened them in any way? Have you experienced groups trying to play around the new mechanics at all, or
+				you just haven't seen it make an impact in fights where players aren't particularly paying attention to
+				it?
+
+
+
+
+
+				Do you feel as though double team attacks have gotten worse since the recent update, or is it an ongoing
+				issue you're calling out?</description>
+			<pubDate>Wed, 01 May 2024 02:50:12 +0200</pubDate>
+		</item>
+		<item>
+			<title>When do gem store items, like Mount Skins, recycle again?</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145886-when-do-gem-store-items-like-mount-skins-recycle-again/?do=findComment&comment=2112591]]>
+			</link>
+			<description>Well first of all, congrats on successfully raising your siege turtle! If you haven't already
+				found it, the Siege Turtle Advent Pack is currently available, and the Kaineng Lights set contains some
+				siege turtle skins as well.
+
+
+
+				To touch on your actual question as well, returning items rotate in and out of the gem store every week,
+				with a different category rotating each week. You can check the "What's In Stock" section of our gem
+				store blog posts, published every Tuesday on our website.
+
+
+
+				The current mount selection will rotate on May 24.</description>
+			<pubDate>Tue, 30 Apr 2024 23:22:27 +0200</pubDate>
+		</item>
+		<item>
+			<title>
+				<![CDATA[Jade Tech Offensive & Defensive Overcharge Timers Incorrect & Excessive]]>
+			</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145464-jade-tech-offensive-defensive-overcharge-timers-incorrect-excessive/?do=findComment&comment=2112557]]>
+			</link>
+			<description>Hey everyone, I've been keeping an eye on this conversation and talking to several people on
+				the team about this change. I want to let you know first that we will be making an adjustment in an
+				upcoming build to reduce the cooldown from 90 seconds to 30 seconds.
+
+
+
+				To give some context on this change and what led to it, jade tech offensive and defensive protocol
+				effects are intended to give players a temporary boost of power at the start of combat, not to maintain
+				those boons permanently—which invalidates many skills, traits, relics, and so on.
+
+
+
+				We also discovered a bug associated with players having both effects at the same time in a particular
+				order, which allowed players to apply the full duration of both boons on demand in certain situations.
+				In the April 16 game update, when we corrected the issue, we also adjusted the cooldown to more
+				accurately reflect the intent for the jade tech protocol effects.
+
+
+
+				However, the change to 90 seconds didn't account for smaller, shorter skirmishes, so while we will not
+				reintroduce the bug that prevented the cooldown, we will revert the cooldown to 30 seconds.
+
+
+
+				Thank you as always for continuing to share your feedback!</description>
+			<pubDate>Tue, 30 Apr 2024 21:30:47 +0200</pubDate>
+		</item>
+		<item>
+			<title>Has Russia disappeared from the list of blocked countries?</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145790-has-russia-disappeared-from-the-list-of-blocked-countries/?do=findComment&comment=2112267]]>
+			</link>
+			<description>Hello! I can let you know that we do audit and update that list periodically based on various
+				factors, including evolving regulations.</description>
+			<pubDate>Tue, 30 Apr 2024 01:18:22 +0200</pubDate>
+		</item>
+		<item>
+			<title>World Linking 4/26/2024</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145781-world-linking-4262024/?do=findComment&comment=2111055]]>
+			</link>
+			<description>Here are the worlds for EU:
+
+
+
+				* Augury Rock (FR), Abaddon's Mouth (DE)
+				* Aurora Glade (EN), Gunnar's Hold (EN)
+				* Baruch Bay (SP)
+				* Blacktide (EN), Piken Square (EN)
+				* Desolation (EN), Fissure of Woe (EN)
+				* Drakkar Lake (DE), Ruins of Surmia (EN)
+				* Elona Reach (DE), Underworld (EN)
+				* Far Shiverpeaks (EN), Dzagonur (DE)
+				* Fort Ranik (FR), Vizunah Square (FR)
+				* Gandara (EN), Arborstone (FR)
+				* Ring of Fire (EN), Kodash (DE)
+				* Riverside (DE), Miller's Sound (DE)
+				* Seafarer's Rest (EN), Jade Sea (FR)
+				* Vabbi (EN)
+				* Whiteside Ridge (EN)
+
+
+
+				Here are the worlds for NA:
+
+
+
+				* Blackgate, Eredon Terrace
+				* Borlis Pass, Northern Shiverpeaks
+				* Crystal Desert, Yak's Bend
+				* Darkhaven, Stormbluff Isle
+				* Dragonbrand, Ferguson's Crossing
+				* Fort Aspenwood, Henge of Denravi
+				* Gate of Madness, Kaineng
+				* Jade Quarry, Anvil Rock
+				* Maguuma, Ehmry Bay
+				* Sanctum of Rall, Devona's Rest
+				* Sea of Sorrows, Sorrow's Furnace
+				* Tarnished Coast, Isle of Janthir</description>
+			<pubDate>Fri, 26 Apr 2024 05:57:23 +0200</pubDate>
+		</item>
+		<item>
+			<title>WTF is Anet doing to WvW?</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145496-wtf-is-anet-doing-to-wvw/?do=findComment&comment=2110957]]>
+			</link>
+			<description>Hey everyone, I want to let you know that several of us have been following and discussing this
+				thread for the past week. The team is reviewing the full conversation as well as some smaller, more
+				specific details, so they'll probably be hopping into this thread to ask for clarification from some of
+				you on various details.</description>
+			<pubDate>Thu, 25 Apr 2024 23:30:44 +0200</pubDate>
+		</item>
+		<item>
+			<title>[Suggestions]QoL (Quality of Life) Ideas [Merged]</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145637-suggestionsqol-quality-of-life-ideas-merged/?do=findComment&comment=2110142]]>
+			</link>
+			<description>This thread is locked but the topic is not closed! Please keep bringing your QOL requests and
+				suggestions in the new thread!</description>
+			<pubDate>Wed, 24 Apr 2024 00:59:52 +0200</pubDate>
+		</item>
+		<item>
+			<title>Quality-of-Life Requests and Suggestions (New for 2024)</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145766-quality-of-life-requests-and-suggestions-new-for-2024/?do=findComment&comment=2110141]]>
+			</link>
+			<description>As we mentioned in our recent blog post, the Guild Wars 2 Live Team has been working for the
+				past few years to address player problems and introduce improvements to areas of the game, such as the
+				new-player experience, crafting, group encounters, and more.
+
+
+
+				Hearing from you, the Guild Wars 2 community, is a big part of this work! I review your QOL requests and
+				share them with the Live Team weekly to keep them updated about what's on your mind, and the QOL thread
+				has been invaluable for that.
+
+
+
+				The previous thread recently passed the 10,000 replies mark and that seems like a good milestone to
+				begin a new, less overwhelming thread to collect and track QOL requests. The previous thread can be
+				found here for anyone who wants to read past requests.
+
+
+
+				Thank you for all of your input on this topic and please keep the QOL requests coming!</description>
+			<pubDate>Wed, 24 Apr 2024 00:57:34 +0200</pubDate>
+		</item>
+		<item>
+			<title>Game Update Notes: April 16, 2024</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145360-game-update-notes-april-16-2024/?do=findComment&comment=2110111]]>
+			</link>
+			<description>Bug Fix:
+
+
+
+
+				Collecting Wizard's Vault daily objective rewards while inside the Super Adventure Box will now properly
+				award PvP and WvW reward track progress.</description>
+			<pubDate>Tue, 23 Apr 2024 23:04:37 +0200</pubDate>
+		</item>
+		<item>
+			<title>Get In-Game Gold with the "On Wiki of Gold" Project</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145711-get-in-game-gold-with-the-on-wiki-of-gold-project/?do=findComment&comment=2110079]]>
+			</link>
+			<description>On Wiki of Gold is a player-run project supported by ArenaNet on the official Guild Wars 2
+				wiki. Any Guild Wars 2 player can receive in-game gold for contributing to articles listed in the
+				project.
+
+
+
+				How can I help?
+
+
+
+				Log in to your wiki account (or create one), visit the On Wiki of Gold page to see the list of articles
+				available for editing, read the guidelines at the top of the page, and create your edit!
+
+
+
+				You can improve the nominated article or any article it directly links to. This includes adding missing
+				screenshots.
+				A nominated article will usually have a suggested edit listed, but that's not required—you can improve
+				it in any way you like.
+
+
+
+
+
+
+
+				What if I'm not comfortable editing the wiki?
+
+
+
+				You can still contribute missing information or screenshots and get credit by using the "Leave Article
+				Feedback" tab that's at the top of every wiki article. Community editors will take care of formatting
+				and find the best place for it.
+
+
+
+
+
+
+
+				About the Project
+
+
+
+				On Wiki of Gold has been ongoing since September 2016, thanks to project organizer @Delsea.2576 .
+				In that time, Guild Wars 2 players have contributed and received gold more than 6,700 times.
+				The name is a nod to the On Wings of Gold adventure in Tarir, the Forgotten City.
+				Most Guild Wars 2 wiki edits are made without taking part in On Wiki of Gold; the project was created to
+				help fill in some of the gaps.
+
+
+
+				Our thanks go out to Delsea and all the wiki editors in the Guild Wars 2 community for their work on
+				this project!</description>
+			<pubDate>Tue, 23 Apr 2024 21:10:08 +0200</pubDate>
+		</item>
+		<item>
+			<title>Game Update Notes: April 16, 2024</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145360-game-update-notes-april-16-2024/?do=findComment&comment=2108395]]>
+			</link>
+			<description>Bug Fix:
+
+
+
+
+				Fixed an issue that could prevent players from being eligible for some Super Adventure Box Test Zone
+				achievements if they completed the requirements before unlocking the Test Zone. The Test Zone
+				achievements are no longer locked before the zone is available to a player. Players who are missing an
+				achievement they earned will receive it upon entering the Super Adventure Box hub zone.</description>
+			<pubDate>Fri, 19 Apr 2024 23:56:00 +0200</pubDate>
+		</item>
+		<item>
+			<title>Game Update Notes: April 16, 2024</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145360-game-update-notes-april-16-2024/?do=findComment&comment=2107855]]>
+			</link>
+			<description>Bug Fixes:
+
+
+
+
+				Essences of Animosity and Certificates of Heroics can now be purchased from Legendary Commander War
+				Razor and Legendary Retired Commander Burn Razor in exchange for Testimonies of Jade Heroics.
+
+
+				Using cosmetic inspection in competitive modes will no longer display players' equipped weapons in the
+				character model view window.</description>
+			<pubDate>Thu, 18 Apr 2024 23:05:39 +0200</pubDate>
+		</item>
+		<item>
+			<title>Certificate of Heroics cannot be purchased for Testimonies of Jade Heroics [Merged]</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145482-certificate-of-heroics-cannot-be-purchased-for-testimonies-of-jade-heroics-merged/?do=findComment&comment=2107772]]>
+			</link>
+			<description>Got an update for you: There is a hotfix coming in later today that will address this!
+			</description>
+			<pubDate>Thu, 18 Apr 2024 20:20:23 +0200</pubDate>
+		</item>
+		<item>
+			<title>New /unleash emote - trailer appreciation!</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145509-new-unleash-emote-trailer-appreciation/?do=findComment&comment=2107280]]>
+			</link>
+			<description>I shared this with the person who worked on it--thank you for mentioning it!</description>
+			<pubDate>Wed, 17 Apr 2024 18:44:45 +0200</pubDate>
+		</item>
+		<item>
+			<title>Game Update Notes: April 16, 2024</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145360-game-update-notes-april-16-2024/?do=findComment&comment=2106841]]>
+			</link>
+			<description>Bug Fix:
+
+
+
+
+				Fixed a server crash.</description>
+			<pubDate>Wed, 17 Apr 2024 01:36:29 +0200</pubDate>
+		</item>
+		<item>
+			<title>Who else would love a Monster Hunter themed event?</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145218-who-else-would-love-a-monster-hunter-themed-event/?do=findComment&comment=2106677]]>
+			</link>
+			<description>This is obviously not a promise or even a hint, but all I can think of reading this is
+				wandering around Queensdale enjoying the beautiful peaceful scenery, and suddenly hearing the Bazelgeuse
+				theme.
+
+
+
+				So thank you for the laugh!</description>
+			<pubDate>Tue, 16 Apr 2024 21:14:19 +0200</pubDate>
+		</item>
+		<item>
+			<title>2024 New SAB Decorations</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145460-2024-new-sab-decorations/?do=findComment&comment=2106672]]>
+			</link>
+			<description>You got them all! They are listed out in the release notes along with the rest of the info
+				about this year's updates to SAB!</description>
+			<pubDate>Tue, 16 Apr 2024 21:05:44 +0200</pubDate>
+		</item>
+		<item>
+			<title>Super Adventure Festival 2024 Begins Today!</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145449-super-adventure-festival-2024-begins-today/?do=findComment&comment=2106669]]>
+			</link>
+			<description>There was a brief issue on the website, but it's solved now and all links are working again!
+			</description>
+			<pubDate>Tue, 16 Apr 2024 21:03:20 +0200</pubDate>
+		</item>
+		<item>
+			<title>Okay, the front page ad for Super Adventure Box/Festival is cute.</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145463-okay-the-front-page-ad-for-super-adventure-boxfestival-is-cute/?do=findComment&comment=2106657]]>
+			</link>
+			<description>Passing this on to the relevant person! Thanks for mentioning it--this is a really fun festival
+				for that sort of thing!</description>
+			<pubDate>Tue, 16 Apr 2024 20:45:03 +0200</pubDate>
+		</item>
+		<item>
+			<title>Next-Level Fashion Wars: Cosmetic Inspect Coming to Guild Wars 2 April 16!</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145438-next-level-fashion-wars-cosmetic-inspect-coming-to-guild-wars-2-april-16/?do=findComment&comment=2106656]]>
+			</link>
+			<description />
+			<pubDate>Tue, 16 Apr 2024 20:42:32 +0200</pubDate>
+		</item>
+		<item>
+			<title>Game Update Notes: April 16, 2024</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145360-game-update-notes-april-16-2024/?do=findComment&comment=2106642]]>
+			</link>
+			<description>04/16/2024—Late Notes
+
+
+
+				General:
+
+
+
+
+				Updated the days remaining in the Wizard's Vault Special Objectives tab.
+
+
+
+
+				Bug Fix:
+
+
+
+
+				Fixed an issue that occurred when interacting with the Searing Cauldron in the Iron Marches.
+			</description>
+			<pubDate>Tue, 16 Apr 2024 20:27:31 +0200</pubDate>
+		</item>
+		<item>
+			<title>Super Adventure Festival 2024 Begins Today!</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145449-super-adventure-festival-2024-begins-today/?do=findComment&comment=2106400]]>
+			</link>
+			<description>Level up with awesome retro-themed rewards during the Super Adventure Festival – starting now
+				until May 7!</description>
+			<enclosure
+				url="https://content.invisioncic.com/a311129/monthly_2024_04/image.jpeg.a7f7fcdb73928defb6d5e921e7f193ee.jpeg"
+				length="147034" type="image/jpeg" />
+			<pubDate>Tue, 16 Apr 2024 17:03:20 +0200</pubDate>
+		</item>
+		<item>
+			<title>Next-Level Fashion Wars: Cosmetic Inspect Coming to Guild Wars 2 April 16!</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145438-next-level-fashion-wars-cosmetic-inspect-coming-to-guild-wars-2-april-16/?do=findComment&comment=2106053]]>
+			</link>
+			<description>😄😄😄
+				I'm not aware of any plans for a low-poly bird stress ball but I guess I can check.</description>
+			<pubDate>Tue, 16 Apr 2024 00:40:04 +0200</pubDate>
+		</item>
+		<item>
+			<title>Next-Level Fashion Wars: Cosmetic Inspect Coming to Guild Wars 2 April 16!</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145438-next-level-fashion-wars-cosmetic-inspect-coming-to-guild-wars-2-april-16/?do=findComment&comment=2106037]]>
+			</link>
+			<description>Okay, this is getting circular. Feedback has been noted.
+
+
+
+				If you want to discuss other parts of today's news post, please do so. I'd rather not lock the thread.
+			</description>
+			<pubDate>Tue, 16 Apr 2024 00:25:45 +0200</pubDate>
+		</item>
+		<item>
+			<title>Next-Level Fashion Wars: Cosmetic Inspect Coming to Guild Wars 2 April 16!</title>
+			<link>
+			<![CDATA[https://en-forum.guildwars2.com/topic/145438-next-level-fashion-wars-cosmetic-inspect-coming-to-guild-wars-2-april-16/?do=findComment&comment=2105856]]>
+			</link>
+			<description>I'm keeping an eye on feedback for this feature across a number of platforms and languages,
+				including this one. So rest assured that this conversation is part of the overall feedback.
+
+
+
+				Also: Discussing and disagreeing is fine and great. Name-calling, bickering, and attacking others
+				because they don't share your opinion? Not at all fine or great.</description>
+			<pubDate>Mon, 15 Apr 2024 22:14:07 +0200</pubDate>
+		</item>
+	</channel>
+</rss>

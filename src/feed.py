@@ -3,23 +3,16 @@ from dateutil.parser import parse
 import feedparser
 
 
-class FeedItem:
-    def __init__(self, item):
-        self.item_root = item
-
-    def get_pubdate(self):
-        return parse(self.item_root.get("published"))  # datetime object
-
-    def get_author(self):
-        return self.item_root.get("author")
-
-
 class Feed(ABC):
     def __init__(self, url, webhooks):
         self.url = url
         self.webhooks = webhooks
 
-        self.feed_data_dict = feedparser.FeedParserDict()
+        self.title = ""
+        self.description = ""
+        self.link = ""
+        self.avatar_url = ""
+
         self.feed_items = []
         self.latest_timestamp = None
         self.new_feed_items = []  # populated by make_embeds()
@@ -29,26 +22,44 @@ class Feed(ABC):
         return self
 
     def load(self):
-        self.feed_data_dict = feedparser.parse(self.url)
+        feed_data = feedparser.parse(self.url)
 
-        if self.feed_data_dict.get("bozo_exception"):
+        if feed_data.get("bozo_exception"):
             raise Exception(
-                f"Failed to parse feed from URL {self.url}\n{self.feed_data_dict.get('bozo_exception')}"
+                f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
             )
 
-        self.feed_items = self._make_feed_items()
-        self.latest_timestamp = max((item.get_pubdate()) for item in self.feed_items)
-        return self
+        self._gather_feed_data(feed_data)
+
+    def _gather_feed_data(self, data):
+        channel = data.get("feed")  # information about the feed itself
+        entries = data.get("entries")  # data about the actual feed items
+
+        self.title = channel.get("title", "Untitled")
+        self.description = channel.get("description", "")
+        self.link = channel.get("link", "")
+        self.avatar_url = channel.get("image", {}).get("url", "")
+
+        self.feed_items = self._make_feed_items(entries)
+        self.latest_timestamp = max((item.pub_date) for item in self.feed_items)
 
     def remove_old_posts(self, timestamps):
         self.feed_items = [
-            post
-            for post in self.feed_items
-            if post.get_pubdate() > timestamps.get(self.url)
+            post for post in self.feed_items if post.pub_date > timestamps.get(self.url)
         ]
 
-    def _make_feed_items(self):
-        items = self.feed_data_dict.get("items", [])
-        if not items:
+    def _make_feed_items(self, entries):
+        if not entries:
             raise Exception(f"Failed to extract feed items from {self.url}")
-        return [FeedItem(item) for item in reversed(items[:10])]
+        return [FeedItem(item) for item in entries[:20]]
+        # note: upper limit just in case
+
+
+class FeedItem:
+    def __init__(self, item):
+        self.link = item.get("link")
+        self.title = item.get("title")
+        self.pub_date = parse(item.get("published"))
+        self.description = item.get("description")
+        self.author = item.get("author")
+        self.media = ""  # TODO
