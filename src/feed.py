@@ -12,6 +12,7 @@ class Feed(ABC):
         self.description = ""
         self.link = ""
         self.avatar_url = ""
+        self.generator = ""
 
         self.feed_items = []
         self.latest_timestamp = None
@@ -25,9 +26,7 @@ class Feed(ABC):
         feed_data = feedparser.parse(self.url)
 
         if feed_data.get("bozo_exception"):
-            raise Exception(
-                f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
-            )
+            raise Exception(f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}")
 
         self._gather_feed_data(feed_data)
 
@@ -39,14 +38,13 @@ class Feed(ABC):
         self.description = channel.get("description", "")
         self.link = channel.get("link", "")
         self.avatar_url = channel.get("image", {}).get("url", "")
+        self.generator = channel.get("generator", "")
 
         self.feed_items = self._make_feed_items(entries)
         self.latest_timestamp = max((item.pub_date) for item in self.feed_items)
 
     def remove_old_posts(self, timestamps):
-        self.feed_items = [
-            post for post in self.feed_items if post.pub_date > timestamps.get(self.url)
-        ]
+        self.feed_items = [post for post in self.feed_items if post.pub_date > timestamps.get(self.url)]
 
     def _make_feed_items(self, entries):
         if not entries:
