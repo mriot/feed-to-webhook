@@ -57,9 +57,9 @@ class Feed(ABC):
 
 class FeedItem:
     def __init__(self, item):
-        self.link = item.get("link")
-        self.title = item.get("title")
+        self.link = item.get("link", "")
+        self.title = item.get("title", "")
         self.pub_date = parse(item.get("published"))
-        self.description = item.get("description")
-        self.author = item.get("author")
-        self.media = ""  # TODO
+        self.description = item.get("description", "")
+        self.author = item.get("author", "")
+        self.media = item.get("media_content", [])

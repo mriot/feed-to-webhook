@@ -17,6 +17,9 @@ class RssFeed(Feed):
             img_tag = html.find("img")
             img_src = img_tag.get("src") if isinstance(img_tag, Tag) else ""
 
+            if item.media:
+                img_src = item.media[0].get("url", img_src)
+
             # remove "http://" and "https://" from the link text
             # (discord does not support markdown links if their name contains http:// or https://)
             for link in html.find_all("a"):
@@ -42,7 +45,7 @@ class RssFeed(Feed):
                     "title": item.title,
                     "url": item.link,
                     "description": html2md(str(html), bodywidth=0),
-                    "image": {"url": img_src or ""},
+                    "image": {"url": img_src},
                     "timestamp": str(item.pub_date),
                 }
             ]
