@@ -1,28 +1,14 @@
-from abc import ABC, abstractmethod
-from dateutil.parser import parse
+import dateutil.parser
 import feedparser
 
 
-class Feed(ABC):
-    def __init__(self, url, webhooks):
+class Feed:
+    def __init__(self, url, webhooks, embed_color=None):
         self.url = url
         self.webhooks = webhooks
+        self.embed_color = int(embed_color if embed_color is not None else "738adb", 16)
 
-        self.title = ""
-        self.description = ""
-        self.link = ""
-        self.avatar_url = ""
-        self.generator = ""
-
-        self.feed_items = []
-        self.latest_timestamp = None
-        self.new_feed_items = []  # populated by make_embeds()
-
-    @abstractmethod
-    def make_embeds(self):
-        return self
-
-    def load(self):
+        # download and parse feed
         feed_data = feedparser.parse(self.url)
 
         if feed_data.get("bozo_exception"):
@@ -30,39 +16,33 @@ class Feed(ABC):
                 f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
             )
 
-        self._gather_feed_data(feed_data)
+        channel = feed_data.get("feed")  # information about the feed itself
+        entries = feed_data.get("entries")  # data about the actual posts
 
-    def _gather_feed_data(self, data):
-        channel = data.get("feed")  # information about the feed itself
-        entries = data.get("entries")  # data about the actual feed items
-
-        self.title = channel.get("title", "Untitled")
-        self.description = channel.get("description", "")
-        self.link = channel.get("link", "")
-        self.avatar_url = channel.get("image", {}).get("url", "")
-        self.generator = channel.get("generator", "")
-
-        self.feed_items = self._make_feed_items(entries)
-        self.latest_timestamp = max((item.pub_date) for item in self.feed_items)
-
-    def remove_old_posts(self, timestamps):
-        self.feed_items = [
-            post for post in self.feed_items if post.pub_date > timestamps.get(self.url)
-        ]
-
-    def _make_feed_items(self, entries):
         if not entries:
             raise Exception(f"Failed to extract feed items from {self.url}")
-        # note: upper limit just in case
-        return [FeedItem(item) for item in entries[:25]]
+
+        self.feed_title = channel.get("title", "Untitled")
+        self.feed_description = channel.get("description", "")
+        self.feed_link = channel.get("link", "")
+        self.feed_avatar_url = channel.get("image", {}).get("url", "")
+        self.feed_gernerator = channel.get("generator", "")
+
+        self.posts = [Post(item) for item in entries[:25]]  # upper limit just in case
+        self.latest_timestamp = max((item.post_pub_date) for item in self.posts)
+
+        self.new_embedded_posts = []  # populated by make_embeds()
+
+    def remove_old_posts(self, timestamp):
+        self.posts = [post for post in self.posts if post.post_pub_date > timestamp]
 
 
-class FeedItem:
+class Post:
     def __init__(self, item):
-        self.link = item.get("link", "")
-        self.title = item.get("title", "")
-        self.pub_date = parse(item.get("published"))
-        self.description = item.get("description", "")
-        self.author = item.get("author", "")
-        self.media = item.get("media_content", [])
-        self.content = item.get("content", "")
+        self.post_link = item.get("link", "")
+        self.post_title = item.get("title", "")
+        self.post_pub_date = dateutil.parser.parse(item.get("published"))
+        self.post_author = item.get("author", "")
+        self.post_description = item.get("description", "")
+        self.post_media = item.get("media_content", [])
+        self.post_content = item.get("content", [])
