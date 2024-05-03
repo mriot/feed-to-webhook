@@ -40,29 +40,3 @@ class Sender:
                     raise Exception(
                         f"**Status code {res.status_code}** ({res.reason})\n**Feed**: {sorted_embeds.feed.url}\n**Webhook: **{webhook}\n**Payload**:\n```json\n{res.request.body}```"
                     )
-
-    # DEPRECATED
-    def send(self):
-        posts = self.feed.prepare_content().new_feed_items
-        for post in posts:
-            for webhook in self.feed.webhooks:
-                res = requests.post(webhook, {"content": post})
-                if res.status_code > 299:
-                    raise Exception(
-                        f"Webhook '{webhook}' responded with status code {res.status_code} and message '{res.reason}'"
-                    )
-
-    # DEPRECATED
-    def send_json(self):
-        posts = self.feed.prepare_content().new_feed_items
-        for post in posts:
-            for webhook in self.feed.webhooks:
-                res = requests.post(
-                    webhook,
-                    json={"embeds": post},
-                    headers={"Content-Type": "application/json"},
-                )
-                if res.status_code > 299:
-                    raise Exception(
-                        f"**Status code {res.status_code}** ({res.reason})\n**Feed**: {self.feed.url}\n**Webhook: **{webhook}\n**Payload**:\n```json\n{res.request.body}```"
-                    )
