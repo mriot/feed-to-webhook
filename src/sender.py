@@ -13,7 +13,7 @@ class Sender:
     def sort_embeds(self):
         embed_list = []
         for feed in self.feeds:
-            for embed in feed.new_feed_items:
+            for embed in feed.new_embedded_posts:
                 embed_list.append({"embeds": embed, "feed": feed})
         embed_list.sort(key=lambda x: x["feed"].latest_timestamp)
         return embed_list
@@ -36,7 +36,7 @@ class Sender:
                         # threading.Timer(int(retry_after), send_request, args=[data]).start()
                         pass
 
-                if res.status_code > 299:
+                if res.status_code >= 300:
                     raise Exception(
                         f"**Status code {res.status_code}** ({res.reason})\n**Feed**: {sorted_embeds.feed.url}\n**Webhook: **{webhook}\n**Payload**:\n```json\n{res.request.body}```"
                     )
