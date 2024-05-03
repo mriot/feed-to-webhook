@@ -15,33 +15,26 @@ def main():
     sender = Sender()
 
     for feed_config in config.get("feeds", []):
-        try:
-            feed = RssFeed(
-                feed_config.get("url"),
-                feed_config.get("webhooks"),
-                feed_config.get("embed_color"),
-            )
 
-            # removes posts that are older than the last time we checked
-            # feed.remove_old_posts(timestamps.get(feed.url))
-            feed.remove_old_posts(timestamps.get(feed.url))
+        feed = RssFeed(
+            feed_config.get("url"),
+            feed_config.get("webhooks"),
+            feed_config.get("embed_color"),
+        )
 
-            # always update - also ensures that new feeds are added to the timestamps file
-            timestamps.update(feed.url, feed.latest_timestamp)
+        # removes posts that are older than the last time we checked
+        # feed.remove_old_posts(timestamps.get(feed.url))
+        feed.remove_old_posts(timestamps.get(feed.url))
 
-            # skip if no new posts
-            if not feed.posts:
-                continue
+        # always update - also ensures that new feeds are added to the timestamps file
+        timestamps.update(feed.url, feed.latest_timestamp)
 
-            feed.make_embeds()
-            sender.add(feed)
+        # skip if no new posts
+        if not feed.posts:
+            continue
 
-        except Exception as e:
-            tb = traceback.TracebackException.from_exception(e).stack[-1]
-            err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
-            print(err)
-            if errhook := config.get("error_webhook"):
-                requests.post(errhook, {"content": err})
+        feed.make_embeds()
+        sender.add(feed)
 
     sender.send_embeds()
 
@@ -55,7 +48,9 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        # TODO - send error to error webhook (?)
         tb = traceback.TracebackException.from_exception(e).stack[-1]
         err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
         print(err)
+
+        if errhook := JsonFile("config.json", False).read().get("error_webhook"):
+            requests.post(errhook, {"content": f"❌ {e}"})
