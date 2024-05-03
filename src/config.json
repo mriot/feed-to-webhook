@@ -27,6 +27,13 @@
                 "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
             ],
             "embed_color": "b11818"
+        },
+        {
+            "url": "https://www.tagesschau.de/inland/regional/rheinlandpfalz/index~rss2.xml",
+            "webhooks": [
+                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
+            ],
+            "embed_color": "1c2841"
         }
     ],
     "error_webhook": "https://discord.com/api/webhooks/1235568239937851433/4oSdgAaDZT6H_ukD2cV-xJcKZmIEMBdxEoprg2rdwf3SXHuTWU4NINACxDcSREfpkSEa"
