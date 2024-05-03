@@ -13,14 +13,15 @@ class Timestamps:
         timestamp = self._timestamps.get(url)
 
         if not timestamp:
-            # if there is no timestamp, we likely haven't fetched this feed before
-            # so we return the current time to simulate that we're up to date
+            # if there is no timestamp, we likely haven't fetched this feed before.
+            # nothing will be posted rn but an entry will be added to the timestamps file.
+            # return current time to ensure that all posts are filtered out.
             return datetime.now(tz=tz.UTC)
 
         return parse(timestamp)
 
-    def update(self, feed):
-        self._timestamps[feed.url] = feed.latest_timestamp.isoformat()
+    def update(self, url, timestamp):
+        self._timestamps[url] = timestamp.isoformat()
 
     def write(self):
         self._timestamps_file.write(self._timestamps)
