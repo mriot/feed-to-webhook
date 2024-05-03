@@ -1,15 +1,13 @@
-import os
+from os import path
 import sys
 import json
 
 
 class JsonFile:
     def __init__(self, file_name, create=True):
-        self.file_path = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), file_name
-        )
+        self.file_path = path.join(path.dirname(path.realpath(__file__)), file_name)
 
-        if create and not os.path.exists(self.file_path):
+        if create and not path.exists(self.file_path):
             with open(self.file_path, "w") as file:
                 json.dump({}, file, ensure_ascii=False, indent=4)
 
