@@ -15,22 +15,27 @@ def main():
     sender = Sender()
 
     for feed_config in config.get("feeds", []):
-        feed = RssFeed(
-            feed_config.get("url"),
-            feed_config.get("webhooks"),
-            feed_config.get("embed_color"),
-        )
-
         try:
-            feed.load()
-            feed.remove_old_posts(timestamps)
-            timestamps.update(feed)
+            feed = RssFeed(
+                feed_config.get("url"),
+                feed_config.get("webhooks"),
+                feed_config.get("embed_color"),
+            )
 
-            if not feed.feed_items:
+            # removes posts that are older than the last time we checked
+            # feed.remove_old_posts(timestamps.get(feed.url))
+            feed.remove_old_posts(timestamps.get(feed.url))
+
+            # always update - also ensures that new feeds are added to the timestamps file
+            timestamps.update(feed.url, feed.latest_timestamp)
+
+            # skip if no new posts
+            if not feed.posts:
                 continue
 
             feed.make_embeds()
             sender.add(feed)
+
         except Exception as e:
             tb = traceback.TracebackException.from_exception(e).stack[-1]
             err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
@@ -47,4 +52,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        # TODO - send error to error webhook (?)
+        tb = traceback.TracebackException.from_exception(e).stack[-1]
+        err = f"❌ {e}\n-> Error occurred in file '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
+        print(err)
