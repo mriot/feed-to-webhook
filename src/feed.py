@@ -53,8 +53,8 @@ class Feed(ABC):
     def _make_feed_items(self, entries):
         if not entries:
             raise Exception(f"Failed to extract feed items from {self.url}")
-        return [FeedItem(item) for item in entries[:20]]
         # note: upper limit just in case
+        return [FeedItem(item) for item in entries[:25]]
 
 
 class FeedItem:
