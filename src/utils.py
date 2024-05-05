@@ -44,7 +44,7 @@ def handle_error_reporting(err: Exception) -> None:
 
     # also send the error to the error webhook if it is configured
     if errhook := JsonFile("config.json", False).read().get("error_webhook"):
-        requests.post(
+        res = requests.post(
             errhook,
             json={
                 "embeds": [
@@ -58,5 +58,8 @@ def handle_error_reporting(err: Exception) -> None:
             headers={"Content-Type": "application/json"},
             timeout=10,
         )
+
+        if res.status_code >= 300:
+            print(f"Error webhook returned status code {res.status_code} ({res.reason})\n")
     else:
         print("Warning: No error webhook configured")
