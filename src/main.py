@@ -52,7 +52,6 @@ def main():
             if not feed.posts:
                 continue
 
-            feed.make_embeds()
             sender.add(feed)
 
         # TODO - add more specific error handling

@@ -3,6 +3,8 @@ from typing import Optional
 import dateutil.parser
 import feedparser
 
+from embed import Embed
+
 
 class Feed:
     def __init__(self, url: str, webhooks: list[str], embed_color: Optional[str] = None):
@@ -38,10 +40,11 @@ class Feed:
         self.posts: list[Post] = [Post(item) for item in entries[:25]]  # upper limit just in case
         self.latest_timestamp: datetime = max((item.post_pub_date) for item in self.posts)
 
-        self.new_embedded_posts: list = []  # populated by make_embeds()
-
     def remove_old_posts(self, timestamp: datetime) -> None:
         self.posts: list[Post] = [post for post in self.posts if post.post_pub_date > timestamp]
+
+    def generate_embeds(self) -> list[Embed]:
+        raise NotImplementedError("Subclasses must implement this method.")
 
 
 class Post:

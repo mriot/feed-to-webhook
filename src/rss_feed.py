@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from html2text import html2text
 
+from embed import Embed
 from utils import strip_protocol
 from feed import Feed
 
@@ -9,6 +9,7 @@ from feed import Feed
 class RssFeed(Feed):
     def __init__(self, url, webhooks, embed_color):
         super().__init__(url, webhooks, embed_color)
+        self.new_embedded_posts: list[Embed] = []
 
     def make_embeds(self):
         for post in reversed(self.posts[:5]):
@@ -27,34 +28,21 @@ class RssFeed(Feed):
                 if "image" not in media.get("type", ""):
                     desc_html.append(media.get("url", ""))
 
-            # TODO - make this a custom embed class
-            embed = [
-                {
-                    "type": "image",
-                    "color": self.embed_color,
-                    "author": {
-                        "name": self.feed_title,
-                        "url": self.feed_link,
-                        "icon_url": self.feed_avatar_url,
-                    },
-                    "title": post.post_title,
-                    "url": post.post_link,
-                    "description": self._format_description(desc_html, post),
-                    "image": {
-                        "url": self._extract_teaser_image(
-                            post.post_media, desc_html, post.post_content
-                        )
-                    },
-                    "timestamp": str(post.post_pub_date),
-                    "footer": {
-                        "text": strip_protocol(self.feed_link),
-                    },
-                }
-            ]
+            self.new_embedded_posts.append(
+                Embed()
+                .add_title(post.post_title, post.post_link)
+                .add_description(str(desc_html))
+                .add_color(self.embed_color)
+                .add_author(self.feed_title, self.feed_link, self.feed_avatar_url)
+                .add_image(self._find_image(desc_html, post.post_media, post.post_content))
+                .add_timestamp(post.post_pub_date)
+                .add_footer(strip_protocol(self.feed_link))
+            )
 
-            self.new_embedded_posts.append(embed)
+        return self.new_embedded_posts
 
-    def _extract_teaser_image(self, media, desc_html, content):
+    def _find_image(self, desc_html: BeautifulSoup, media: list, content: list) -> str:
+        """Returns URL of the first image found in the post description, media or content tags"""
         if img_tag := desc_html.find("img"):
             if isinstance(img_tag, Tag):
                 return img_tag.get("src", "")
@@ -71,15 +59,3 @@ class RssFeed(Feed):
                         return img_tag.get("src", "")
 
         return ""
-
-    def _format_description(self, post_desc, post):
-        description = str(post_desc)
-
-        if len(description) >= 750 and post.post_link:
-            description = description[:750]
-            description += f"... <a href='{post.post_link}'>Read more</a>"
-
-        if not post.post_title and post.post_link:
-            description += f"<p><a href='{post.post_link}'>Link to post</a></p>"
-
-        return html2text(str(description), bodywidth=0)

@@ -17,8 +17,8 @@ class Sender:
     def sort_embeds(self):
         embed_list = []
         for feed in self.feeds:
-            for embed in feed.new_embedded_posts:
-                embed_list.append({"embeds": embed, "feed": feed})
+            for embed in feed.generate_embeds():
+                embed_list.append({"embed": embed.build(), "feed": feed})
         embed_list.sort(key=lambda x: x["feed"].latest_timestamp)
         return embed_list
 
