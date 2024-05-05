@@ -7,6 +7,11 @@ import requests
 from file_handler import JsonFile
 
 
+def strip_protocol(string: str) -> str:
+    """Removes all URL protocols from a string."""
+    return re.sub(r"^[a-zA-Z]+://", "", string)
+
+
 class FeedConfigError(Exception):
     """Exception raised for errors in the feed configuration."""
 
@@ -15,9 +20,6 @@ class FeedConfigError(Exception):
         self.feed_config = feed_config
 
 
-def strip_protocol(string: str) -> str:
-    """Removes all URL protocols from a string."""
-    return re.sub(r"^[a-zA-Z]+://", "", string)
 
 
 def handle_error_reporting(err: Exception) -> None:
