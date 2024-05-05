@@ -20,6 +20,13 @@ class FeedConfigError(Exception):
         self.feed_config = feed_config
 
 
+class WebhookHTTPError(requests.HTTPError):
+    """Exception raised for errors in the webhook HTTP response."""
+
+    def __init__(self, title, body, response=None):
+        super().__init__(title)
+        self.body = body
+        self.response = response
 
 
 def handle_error_reporting(err: Exception) -> None:
@@ -29,6 +36,9 @@ def handle_error_reporting(err: Exception) -> None:
 
     if isinstance(err, FeedConfigError):
         err_msg = f"```{json.dumps(err.feed_config, indent=2)}``` \n {err_msg}"
+
+    if isinstance(err, WebhookHTTPError):
+        err_msg = f"{err.body} \n ```{err.response}``` \n {err_msg}"
 
     print(f"ERROR: {err}\n{err_msg}")
 
