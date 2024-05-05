@@ -1,8 +1,9 @@
-from feed import Feed
-from html2text import html2text
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-import utils
+from html2text import html2text
+
+from utils import strip_protocol
+from feed import Feed
 
 
 class RssFeed(Feed):
@@ -14,11 +15,11 @@ class RssFeed(Feed):
             desc_html = BeautifulSoup(post.post_description, "html.parser")
 
             # strip protocol from link-texts in the description - the actual link is kept as-is
-            # (discord seems to not support markdown links if their name contains http:// or https://)
+            # (discord seems to not support markdown links if their name contains http or https)
             for link in desc_html.find_all("a"):
                 # link.text concatenates text from all child tags whereas
                 # link.string could return None if there are multiple child tags
-                link.string = utils.strip_protocol(link.text)
+                link.string = strip_protocol(link.text)
 
             # TODO - try to handle more media types
             # for now we just append the url of other media types to the description
@@ -26,6 +27,7 @@ class RssFeed(Feed):
                 if "image" not in media.get("type", ""):
                     desc_html.append(media.get("url", ""))
 
+            # TODO - make this a custom embed class
             embed = [
                 {
                     "type": "image",
@@ -45,7 +47,7 @@ class RssFeed(Feed):
                     },
                     "timestamp": str(post.post_pub_date),
                     "footer": {
-                        "text": utils.strip_protocol(self.feed_link),
+                        "text": strip_protocol(self.feed_link),
                     },
                 }
             ]
