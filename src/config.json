@@ -1,6 +1,27 @@
 {
     "feeds": [
         {
+            "url": "https://www.heise.de/newsticker/heise-atom.xml",
+            "webhooks": [
+                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
+            ],
+            "embed_color": "1c2841"
+        },
+        {
+            "url": "https://www.motorradonline.de/rss/alle",
+            "webhooks": [
+                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
+            ],
+            "embed_color": "d51224"
+        },
+        {
+            "url": "https://www.welt.de/feeds/latest.rss",
+            "webhooks": [
+                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
+            ],
+            "embed_color": "003a5a"
+        },
+        {
             "url": "https://mstdn.social/@that_shaman.rss",
             "webhooks": [
                 "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
