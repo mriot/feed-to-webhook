@@ -15,7 +15,7 @@ def strip_protocol(string: str) -> str:
 class FeedConfigError(Exception):
     """Exception raised for errors in the feed configuration."""
 
-    def __init__(self, title, feed_config=None):
+    def __init__(self, title, feed_config):
         super().__init__(title)
         self.feed_config = feed_config
 
@@ -23,7 +23,7 @@ class FeedConfigError(Exception):
 class WebhookHTTPError(requests.HTTPError):
     """Exception raised for errors in the webhook HTTP response."""
 
-    def __init__(self, title, body, response=None):
+    def __init__(self, title, body, response):
         super().__init__(title)
         self.body = body
         self.response = response
