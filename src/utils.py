@@ -15,8 +15,8 @@ def strip_protocol(string: str) -> str:
 class FeedConfigError(Exception):
     """Exception raised for errors in the feed configuration."""
 
-    def __init__(self, message, feed_config):
-        super().__init__(message)
+    def __init__(self, title, feed_config=None):
+        super().__init__(title)
         self.feed_config = feed_config
 
 
