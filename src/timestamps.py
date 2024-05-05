@@ -1,7 +1,9 @@
-from file_handler import JsonFile
-from dateutil.parser import parse
-from dateutil import tz
 from datetime import datetime
+
+from dateutil import tz
+from dateutil.parser import parse
+
+from file_handler import JsonFile
 
 
 class Timestamps:
