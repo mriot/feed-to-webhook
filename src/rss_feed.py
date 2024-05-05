@@ -81,21 +81,3 @@ class RssFeed(Feed):
             description += f"<p><a href='{post.post_link}'>Link to post</a></p>"
 
         return html2text(str(description), bodywidth=0)
-
-    # TODO - make this more generic
-    def _sanitize_links(self, html: BeautifulSoup):
-        # remove "http://" and "https://" from the link text
-        # (discord does not support markdown links if their name contains http:// or https://)
-        for link in html.find_all("a"):
-            if link.text.find("http://") or link.text.find("https://"):
-                link.string = link.text.replace("http://", "").replace("https://", "")
-        return html
-
-    # ! DEPRECATED
-    def _sanitize_html(self, html: BeautifulSoup):
-        # remove certain html tags from description before transforming to markdown
-        tags_to_remove = ["img"]
-        for tag_name in tags_to_remove:
-            for tag in html.find_all(tag_name):
-                tag.decompose()
-        return html
