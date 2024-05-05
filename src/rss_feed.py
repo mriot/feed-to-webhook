@@ -2,6 +2,7 @@ from feed import Feed
 from html2text import html2text
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+import utils
 
 
 class RssFeed(Feed):
@@ -11,9 +12,16 @@ class RssFeed(Feed):
     def make_embeds(self):
         for post in reversed(self.posts[:5]):
             desc_html = BeautifulSoup(post.post_description, "html.parser")
-            desc_html = self._sanitize_links(desc_html)
+
+            # strip protocol from link-texts in the description - the actual link is kept as-is
+            # (discord seems to not support markdown links if their name contains http:// or https://)
+            for link in desc_html.find_all("a"):
+                # link.text concatenates text from all child tags whereas
+                # link.string could return None if there are multiple child tags
+                link.string = utils.strip_protocol(link.text)
 
             # TODO - try to handle more media types
+            # for now we just append the url of other media types to the description
             for media in post.post_media:
                 if "image" not in media.get("type", ""):
                     desc_html.append(media.get("url", ""))
@@ -37,7 +45,7 @@ class RssFeed(Feed):
                     },
                     "timestamp": str(post.post_pub_date),
                     "footer": {
-                        "text": self.feed_link.replace("https://", "").replace("http://", "")
+                        "text": utils.strip_protocol(self.feed_link),
                     },
                 }
             ]
