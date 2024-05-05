@@ -9,12 +9,12 @@ from utils import WebhookHTTPError
 
 class Sender:
     def __init__(self):
-        self.feeds = []
+        self.feeds: list[Feed] = []
 
     def add(self, feed: Feed):
         self.feeds.append(feed)
 
-    def sort_embeds(self):
+    def sort_embeds(self) -> list[dict]:
         embed_list = []
         for feed in self.feeds:
             for embed in feed.generate_embeds():
@@ -22,7 +22,7 @@ class Sender:
         embed_list.sort(key=lambda x: x["feed"].latest_timestamp)
         return embed_list
 
-    def send_embeds(self):
+    def send(self):
         MAX_RETRY_LIMIT = 3
 
         for sorted_embeds in self.sort_embeds():
@@ -30,7 +30,7 @@ class Sender:
                 for counter in range(MAX_RETRY_LIMIT):
                     res = requests.post(
                         webhook,
-                        json={"embeds": sorted_embeds["embeds"]},
+                        json={"embeds": sorted_embeds["embed"]},
                         headers={"Content-Type": "application/json"},
                         timeout=5,
                     )
@@ -48,7 +48,7 @@ class Sender:
                     if res.status_code >= 300:
                         raise WebhookHTTPError(
                             f"Status code {res.status_code} ({res.reason})",
-                            f"Feed: {sorted_embeds.get("feed").url}\n"
+                            f"Feed: {sorted_embeds["feed"].url}\n"
                             f"Webhook: {webhook}\nResponse:",
                             json.dumps(res.json(), indent=2)
                         )
@@ -58,7 +58,7 @@ class Sender:
                     # we could not make it past the rate limit for some reason
                     raise WebhookHTTPError(
                         f"Rate limit exceeded: {res.status_code} ({res.reason})",
-                        f"Feed: {sorted_embeds.get("feed").url}\n"
+                        f"Feed: {sorted_embeds["feed"].url}\n"
                         f"Webhook: {webhook}",
                         json.dumps(res.json(), indent=2)
                     )

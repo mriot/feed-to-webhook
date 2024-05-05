@@ -58,7 +58,7 @@ def main():
         except Exception as feed_err:
             handle_error_reporting(feed_err)
 
-    sender.send_embeds()
+    sender.send()
 
     timestamps.write()
 

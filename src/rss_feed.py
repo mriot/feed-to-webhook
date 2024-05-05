@@ -11,15 +11,15 @@ class RssFeed(Feed):
         super().__init__(url, webhooks, embed_color)
         self.new_embedded_posts: list[Embed] = []
 
-    def make_embeds(self):
+    def generate_embeds(self):
         for post in reversed(self.posts[:5]):
             desc_html = BeautifulSoup(post.post_description, "html.parser")
 
             # strip protocol from link-texts in the description - the actual link is kept as-is
             # (discord seems to not support markdown links if their name contains http or https)
             for link in desc_html.find_all("a"):
-                # link.text concatenates text from all child tags whereas
-                # link.string could return None if there are multiple child tags
+                # link.text concatenates the text from all child tags
+                # link.string replaces the inner text of the a-tag (which clears all child tags)
                 link.string = strip_protocol(link.text)
 
             # TODO - try to handle more media types
@@ -45,7 +45,9 @@ class RssFeed(Feed):
         """Returns URL of the first image found in the post description, media or content tags"""
         if img_tag := desc_html.find("img"):
             if isinstance(img_tag, Tag):
-                return img_tag.get("src", "")
+                src = img_tag.get("src", "")
+                if isinstance(src, str):
+                    return src
 
         for item in media:
             if "image" in item.get("type", ""):
@@ -56,6 +58,8 @@ class RssFeed(Feed):
                 html = BeautifulSoup(item.value, "html.parser")
                 if img_tag := html.find("img"):
                     if isinstance(img_tag, Tag):
-                        return img_tag.get("src", "")
+                        src = img_tag.get("src", "")
+                        if isinstance(src, str):
+                            return src
 
         return ""
