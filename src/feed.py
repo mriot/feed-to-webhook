@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 import dateutil.parser
 import feedparser
+import requests
 
 from embed import Embed
 
@@ -15,10 +16,18 @@ class Feed:
         # download and parse feed
         feed_data: feedparser.FeedParserDict = feedparser.parse(self.url)
 
-        if feed_data.get("bozo_exception"):
-            raise ValueError(
-                f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
-            )
+        # attempt to fix encoding issues
+        if feed_data.get("bozo_exception") and feed_data.get("encoding") != "utf-8":
+            print(f"Failed to parse feed {self.url}, trying to fix encoding issues...")
+            res = requests.get(self.url, timeout=5)
+            res.encoding = "utf-8"
+            feed_data = feedparser.parse(res.text)
+
+            # if we still can't parse the feed, good luck
+            if feed_data.get("bozo_exception"):
+                raise ValueError(
+                    f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
+                )
 
         channel = feed_data.get("feed")
         entries = feed_data.get("entries")
