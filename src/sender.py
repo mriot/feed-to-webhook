@@ -48,9 +48,8 @@ class Sender:
                     if res.status_code >= 300:
                         raise WebhookHTTPError(
                             f"Status code {res.status_code} ({res.reason})",
-                            f"Feed: {sorted_embeds["feed"].url}\n"
-                            f"Webhook: {webhook}\nResponse:",
-                            json.dumps(res.json(), indent=2)
+                            f"Feed: {sorted_embeds['feed'].url}\n" f"Webhook: {webhook}\nResponse:",
+                            json.dumps(res.json(), indent=2),
                         )
 
                     break  # if we reach this point, the request was successful
@@ -58,7 +57,6 @@ class Sender:
                     # we could not make it past the rate limit for some reason
                     raise WebhookHTTPError(
                         f"Rate limit exceeded: {res.status_code} ({res.reason})",
-                        f"Feed: {sorted_embeds["feed"].url}\n"
-                        f"Webhook: {webhook}",
-                        json.dumps(res.json(), indent=2)
+                        f"Feed: {sorted_embeds['feed'].url}\n" f"Webhook: {webhook}",
+                        json.dumps(res.json(), indent=2),
                     )

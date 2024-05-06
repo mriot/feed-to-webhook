@@ -1,5 +1,6 @@
 from datetime import datetime
 from html2text import html2text
+from typing import Union
 
 
 class Embed:
@@ -39,7 +40,7 @@ class Embed:
         self.description = html2text(str(desc), bodywidth=0)
         return self
 
-    def add_color(self, color: int | str):
+    def add_color(self, color: Union[int, str]):
         self.embed_color = str(color)
         return self
 
@@ -53,7 +54,7 @@ class Embed:
         self.image_url = url
         return self
 
-    def add_timestamp(self, timestamp: str | datetime):
+    def add_timestamp(self, timestamp: Union[str, datetime]):
         self.timestamp = str(timestamp)
         return self
 
