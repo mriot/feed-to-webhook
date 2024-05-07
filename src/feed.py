@@ -31,12 +31,6 @@ class Feed(ABC):
                     f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
                 )
 
-        if feed_data.status == 301:
-            raise ValueError(f"Feed URL {self.url} has permanently moved to {feed_data.href}.")
-
-        if feed_data.status == 410:
-            raise ValueError(f"Feed URL {self.url} has been permanently removed.")
-
         channel = feed_data.get("feed")
         entries = feed_data.get("entries")
 
