@@ -1,61 +1,12 @@
 {
     "feeds": [
         {
-            "url": "https://www.heise.de/newsticker/heise-atom.xml",
+            "url": "",
             "webhooks": [
-                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
+                ""
             ],
-            "embed_color": "1c2841"
-        },
-        {
-            "url": "https://www.motorradonline.de/rss/alle",
-            "webhooks": [
-                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
-            ],
-            "embed_color": "d51224"
-        },
-        {
-            "url": "https://www.welt.de/feeds/latest.rss",
-            "webhooks": [
-                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
-            ],
-            "embed_color": "003a5a"
-        },
-        {
-            "url": "https://mstdn.social/@that_shaman.rss",
-            "webhooks": [
-                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
-            ],
-            "embed_color": "3776ab"
-        },
-        {
-            "url": "https://partyparrot.social/@gw2bot.rss",
-            "webhooks": [
-                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
-            ],
-            "embed_color": "b11818"
-        },
-        {
-            "url": "https://en-forum.guildwars2.com/discover/6.xml",
-            "webhooks": [
-                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
-            ],
-            "embed_color": "b11818"
-        },
-        {
-            "url": "https://www.guildwars2.com/en/feed/",
-            "webhooks": [
-                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
-            ],
-            "embed_color": "b11818"
-        },
-        {
-            "url": "https://www.tagesschau.de/inland/regional/rheinlandpfalz/index~rss2.xml",
-            "webhooks": [
-                "https://discord.com/api/webhooks/1235546249222950993/Pk2kaQGU59NFNsmfSR4arARUw5a1ol8WQ5ayKgcoMyLzfKfGlxvjmFTeObGS5af7n_Q0"
-            ],
-            "embed_color": "1c2841"
+            "embed_color": ""
         }
     ],
-    "error_webhook": "https://discord.com/api/webhooks/1235568239937851433/4oSdgAaDZT6H_ukD2cV-xJcKZmIEMBdxEoprg2rdwf3SXHuTWU4NINACxDcSREfpkSEa"
+    "error_webhook": ""
 }
