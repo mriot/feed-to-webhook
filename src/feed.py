@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Optional
 import dateutil.parser
@@ -7,7 +8,7 @@ import requests
 from embed import Embed
 
 
-class Feed:
+class Feed(ABC):
     def __init__(self, url: str, webhooks: list[str], embed_color: Optional[str] = None):
         self.url: str = url
         self.webhooks: list[str] = webhooks
@@ -52,8 +53,9 @@ class Feed:
     def remove_old_posts(self, timestamp: datetime) -> None:
         self.posts: list[Post] = [post for post in self.posts if post.post_pub_date > timestamp]
 
+    @abstractmethod
     def generate_embeds(self) -> list[Embed]:
-        raise NotImplementedError("Subclasses must implement this method.")
+        pass
 
 
 class Post:
