@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bs
 from bs4.element import Tag
 
 from embed import Embed
@@ -13,7 +13,7 @@ class RssFeed(Feed):
 
     def generate_embeds(self):
         for post in reversed(self.posts[:5]):
-            desc_html = BeautifulSoup(post.post_description, "html.parser")
+            desc_html = bs(post.post_description, "html.parser")
 
             # strip protocol from link-texts in the description - the actual link is kept as-is
             # (discord seems to not support markdown links if their name contains http or https)
@@ -23,10 +23,10 @@ class RssFeed(Feed):
                 link.string = strip_protocol(link.text)
 
             # TODO - try to handle more media types
-            # for now we just append the url of other media types to the description
+            # for now we just append the url of videos to the description
             for media in post.post_media:
-                if "image" not in media.get("type", ""):
-                    desc_html.append(media.get("url", ""))
+                if "video" in media.get("type"):
+                    desc_html.append(bs(f"<p>{media.get('url')}</p>", "html.parser"))
 
             self.new_embedded_posts.append(
                 Embed()
@@ -41,7 +41,7 @@ class RssFeed(Feed):
 
         return self.new_embedded_posts
 
-    def _find_image(self, desc_html: BeautifulSoup, media: list, content: list) -> str:
+    def _find_image(self, desc_html: bs, media: list, content: list) -> str:
         """Returns URL of the first image found in the post description, media or content tags"""
         if img_tag := desc_html.find("img"):
             if isinstance(img_tag, Tag):
@@ -55,7 +55,7 @@ class RssFeed(Feed):
 
         for item in content:
             if item.get("type") == "text/html":
-                html = BeautifulSoup(item.value, "html.parser")
+                html = bs(item.value, "html.parser")
                 if img_tag := html.find("img"):
                     if isinstance(img_tag, Tag):
                         src = img_tag.get("src", "")
