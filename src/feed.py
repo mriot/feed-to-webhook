@@ -14,6 +14,7 @@ class Feed(ABC):
         self.webhooks: list[str] = webhooks
         self.embed_color: int = int(embed_color if embed_color is not None else "738adb", 16)
 
+        # TODO - maybe fetch feed always using requests and parse it using feedparser
         # download and parse feed
         feed_data: feedparser.FeedParserDict = feedparser.parse(self.url)
 
@@ -24,7 +25,7 @@ class Feed(ABC):
             res.encoding = "utf-8"
             feed_data = feedparser.parse(res.text)
 
-            # if we still can't parse the feed, good luck
+            # raise exception if we still can't parse the feed
             if feed_data.get("bozo_exception"):
                 raise ValueError(
                     f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
@@ -33,6 +34,7 @@ class Feed(ABC):
         channel = feed_data.get("feed")
         entries = feed_data.get("entries")
 
+        # might be a list of FeedParserDicts - should be a single dict
         if not isinstance(channel, dict):
             raise TypeError(f"Failed to extract feed data from {self.url}")
 
