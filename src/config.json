@@ -1,0 +1,12 @@
+{
+    "feeds": [
+        {
+            "url": "",
+            "webhooks": [
+                ""
+            ],
+            "embed_color": ""
+        }
+    ],
+    "error_webhook": ""
+}
