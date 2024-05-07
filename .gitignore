@@ -1,5 +1,5 @@
-config.yaml
-feed_timestamps.yaml
+config.json
+feed_timestamps.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
