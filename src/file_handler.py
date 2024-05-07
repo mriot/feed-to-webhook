@@ -4,8 +4,10 @@ import json
 
 
 class JsonFile:
+    """Helper class for reading and writing JSON files in the project's root directory."""
+
     def __init__(self, file_name, create=True):
-        self.file_path = path.join(path.dirname(path.realpath(__file__)), file_name)
+        self.file_path = path.join(path.dirname(path.realpath(__file__)), "..", file_name)
 
         if create and not path.exists(self.file_path):
             with open(self.file_path, "w", encoding="utf-8") as file:
