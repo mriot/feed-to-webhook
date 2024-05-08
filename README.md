@@ -11,7 +11,7 @@ A script that fetches RSS feeds and sends them to Discord using webhooks.
 > ❗ Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
 
 - Download this project, optionally create a [virtual environment](https://docs.python.org/3/library/venv.html) and run `pip install -r requirements.txt` to install dependencies  
-- In `src/` edit `config.json` to add your feeds and webhooks
+- Edit `config.json` to add your feeds and webhooks
 - On a Raspberry Pi you can use `crontab -e` to create a cronjob  
   E.g. `*/15 * * * * python3 {path_to_project}/src/main.py` (*every 15th minute*)  
   [Crontab Guru](https://crontab.guru/) can help with the syntax
