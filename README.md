@@ -1,21 +1,18 @@
-# Feed to Webhook
+# FTW - Feed to Webhook
 
-A script that fetches RSS feeds and sends them to Discord using webhooks.  
-
->📌  
-> On the initial run, nothing is posted to your webhooks.  
-> It retrieves the latest update from each feed and then starts monitoring for new posts.  
+Simple RSS feed aggregator meant to be run on a Raspberry Pi, sending new posts via webhooks (e.g. to Discord).
 
 ## Usage
 
-> ❗ Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
+> 📌 Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
 
 - Download this project, optionally create a [virtual environment](https://docs.python.org/3/library/venv.html) and run `pip install -r requirements.txt` to install dependencies  
 - Edit `config.json` to add your feeds and webhooks
+- Run `python3 src/main.py` to let it create the `feed_timestamps.json` file
+- Check the console output for any errors
 - On a Raspberry Pi you can use `crontab -e` to create a cronjob  
   E.g. `*/15 * * * * python3 {path_to_project}/src/main.py` (*every 15th minute*)  
   [Crontab Guru](https://crontab.guru/) can help with the syntax
-****
 ## Config
 
 Add the feeds you want to subscribe to along with a webhook url to `config.json`.  
