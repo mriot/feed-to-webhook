@@ -6,6 +6,7 @@ import feedparser
 import requests
 
 from embed import Embed
+from utils import get_favicon_url
 
 
 class Feed(ABC):
@@ -47,7 +48,9 @@ class Feed(ABC):
         self.feed_title: str = channel.get("title", "Untitled")
         self.feed_description: str = channel.get("description", "")
         self.feed_link: str = channel.get("link", "")
-        self.feed_avatar_url: str = channel.get("image", {}).get("url", "")
+        self.feed_avatar_url: str = channel.get("image", {}).get("url")
+        if not self.feed_avatar_url:
+            self.feed_avatar_url = get_favicon_url(self.feed_link)
 
         self.posts: list[Post] = [Post(item) for item in entries[:25]]  # upper limit just in case
         self.latest_timestamp: datetime = max((item.post_pub_date) for item in self.posts)
