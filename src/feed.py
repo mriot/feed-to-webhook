@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+import json
 from typing import Optional
 import dateutil.parser
 import feedparser
@@ -43,7 +44,10 @@ class Feed(ABC):
             raise TypeError(f"Failed to extract posts from feed {self.url}")
 
         if not entries:
-            raise ValueError(f"No posts found in feed {self.url}")
+            # TODO - temporarily show the feed data to help debugging
+            raise ValueError(
+                f"No posts found in feed {self.url}\n{json.dumps(feed_data, indent=2)}"
+            )
 
         self.feed_title: str = channel.get("title", "Untitled")
         self.feed_description: str = channel.get("description", "")
