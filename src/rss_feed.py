@@ -19,8 +19,15 @@ class RssFeed(Feed):
             # (discord seems to not support markdown links if their name contains http or https)
             for link in desc_html.find_all("a"):
                 # link.text concatenates the text from all child tags
-                # link.string replaces the inner text of the a-tag (which clears all child tags)
+                # link.string replaces the inner text of the a-tag (also clears all child tags)
                 link.string = strip_protocol(link.text)
+
+            # find the first image in the post and use it as the teaser image
+            teaser_image_url = self._find_image(desc_html, post.post_media, post.post_content)
+
+            # remove all images from the description as we cant embed them anyway
+            for img in desc_html.find_all("img"):
+                img.decompose()
 
             # TODO - try to handle more media types
             # for now we just append the url of videos to the description
@@ -34,7 +41,7 @@ class RssFeed(Feed):
                 .add_description(str(desc_html))
                 .add_color(self.embed_color)
                 .add_author(self.feed_title, self.feed_link, self.feed_avatar_url)
-                .add_image(self._find_image(desc_html, post.post_media, post.post_content))
+                .add_image(teaser_image_url)
                 .add_timestamp(post.post_pub_date)
                 .add_footer(strip_protocol(self.feed_link))
             )
