@@ -12,7 +12,7 @@ class RssFeed(Feed):
         self.new_embedded_posts: list[Embed] = []
 
     def generate_embeds(self):
-        for post in reversed(self.posts[:5]):
+        for post in reversed(self.posts):
             desc_html = bs(post.post_description, "html.parser")
 
             # strip protocol from link-texts in the description - the actual link is kept as-is
