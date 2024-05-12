@@ -4,7 +4,7 @@ Simple RSS feed aggregator for tiny servers like a Raspberry Pi, sending new pos
 
 <img src="https://github.com/mriot/feed-to-webhook/assets/24588573/ae48bf39-09c1-43ca-a0eb-cb59f5ebf4a5" height="400">
 
-## Usage
+## Setup
 
 > 📌 Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
 
@@ -15,6 +15,7 @@ Simple RSS feed aggregator for tiny servers like a Raspberry Pi, sending new pos
 - On a Raspberry Pi you can use `crontab -e` to create a cronjob  
   E.g. `*/15 * * * * python3 {path_to_project}/src/main.py` (*every 15th minute*)  
   [Crontab Guru](https://crontab.guru/) can help with the syntax
+
 ## Config
 
 Add the feeds you want to subscribe to along with one or more webhook urls to `config.json`.  
