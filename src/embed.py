@@ -28,12 +28,6 @@ class Embed:
     def add_description(self, description: str):
         desc = description
 
-        # truncate description if it exceeds 750 characters
-        if len(desc) >= 750 and self.post_url:
-            desc = desc[:750]
-            desc += f"... <a href='{self.post_url}'>Read more</a>"
-
-        # add 'link to post' if no title is set
         if not self.post_title and self.post_url:
             desc += f"<p><a href='{self.post_url}'>Link to post</a></p>"
 
