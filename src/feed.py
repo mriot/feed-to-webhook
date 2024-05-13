@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 import json
 from typing import Optional
+from xml.sax import SAXParseException
 import dateutil.parser
 import feedparser
-import requests
 
 from embed import Embed
 from utils import get_favicon_url
@@ -16,22 +16,13 @@ class Feed(ABC):
         self.webhooks: list[str] = webhooks
         self.embed_color: int = int(embed_color if embed_color is not None else "738adb", 16)
 
-        res = requests.get(self.url, timeout=5)
+        feed_data: feedparser.FeedParserDict = feedparser.parse(self.url)
 
-        res.raise_for_status()
-
-        feed_data: feedparser.FeedParserDict = feedparser.parse(res.text)
-
-        # attempt to fix encoding issues by forcing utf-8
-        if feed_data.get("bozo_exception") and res.encoding != "utf-8":
-            res.encoding = "utf-8"
-            feed_data = feedparser.parse(res.text)
-
-            # raise if we still can't parse the feed
-            if feed_data.get("bozo_exception"):
-                raise ValueError(
-                    f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
-                )
+        # create a more comprehensive error message than the default one
+        if feed_data.bozo and isinstance(feed_data.get("bozo_exception"), SAXParseException):
+            raise ValueError(
+                f"Failed to parse feed {self.url} ({feed_data.get('status', 'is the path and file valid?')})"
+            )
 
         channel = feed_data.get("feed")
         entries = feed_data.get("entries")
