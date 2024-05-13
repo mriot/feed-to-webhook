@@ -20,6 +20,10 @@ class Feed(ABC):
         # download and parse feed
         feed_data: feedparser.FeedParserDict = feedparser.parse(self.url)
 
+        status_code = feed_data.get("status", 418)
+        if not isinstance(status_code, int) or status_code >= 300:
+            raise ValueError(f"Failed to fetch feed from URL {self.url} - code {status_code}")
+
         # attempt to fix encoding issues
         if feed_data.get("bozo_exception") and feed_data.get("encoding") != "utf-8":
             print(f"Failed to parse feed {self.url}, trying to fix encoding issues...")
