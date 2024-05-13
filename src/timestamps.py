@@ -10,7 +10,6 @@ class Timestamps:
     def __init__(self):
         self._timestamps_file = JsonFile("feed_timestamps.json")
         self._timestamps = self._timestamps_file.read() or {}
-        self._updated_timestamps = {}
 
     def get(self, url):
         timestamp = self._timestamps.get(url)
@@ -24,7 +23,7 @@ class Timestamps:
         return parse(timestamp)
 
     def update(self, url, timestamp):
-        self._updated_timestamps[url] = timestamp.isoformat()
+        self._timestamps[url] = timestamp.isoformat()
 
     def write(self):
-        self._timestamps_file.write(self._updated_timestamps)
+        self._timestamps_file.write(self._timestamps)
