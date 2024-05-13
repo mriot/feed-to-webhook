@@ -48,7 +48,7 @@ class Sender:
                             continue
 
                         # Check for any other error codes
-                        if res.status_code >= 300:
+                        if res.status_code >= 400:
                             raise WebhookHTTPError(
                                 f"Status code {res.status_code} ({res.reason})",
                                 f"Feed: {sorted_embed['feed'].url}\n"
