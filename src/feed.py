@@ -16,22 +16,18 @@ class Feed(ABC):
         self.webhooks: list[str] = webhooks
         self.embed_color: int = int(embed_color if embed_color is not None else "738adb", 16)
 
-        # TODO - maybe fetch feed always using requests and parse it using feedparser
-        # download and parse feed
-        feed_data: feedparser.FeedParserDict = feedparser.parse(self.url)
+        res = requests.get(self.url, timeout=5)
 
-        status_code = feed_data.get("status", 418)
-        if not isinstance(status_code, int) or status_code >= 300:
-            raise ValueError(f"Failed to fetch feed from URL {self.url} - code {status_code}")
+        res.raise_for_status()
 
-        # attempt to fix encoding issues
-        if feed_data.get("bozo_exception") and feed_data.get("encoding") != "utf-8":
-            print(f"Failed to parse feed {self.url}, trying to fix encoding issues...")
-            res = requests.get(self.url, timeout=5)
+        feed_data: feedparser.FeedParserDict = feedparser.parse(res.text)
+
+        # attempt to fix encoding issues by forcing utf-8
+        if feed_data.get("bozo_exception") and res.encoding != "utf-8":
             res.encoding = "utf-8"
             feed_data = feedparser.parse(res.text)
 
-            # raise exception if we still can't parse the feed
+            # raise if we still can't parse the feed
             if feed_data.get("bozo_exception"):
                 raise ValueError(
                     f"Failed to parse feed from URL {self.url}\n{feed_data.get('bozo_exception')}"
@@ -48,7 +44,6 @@ class Feed(ABC):
             raise TypeError(f"Failed to extract posts from feed {self.url}")
 
         if not entries:
-            # TODO - temporarily show the feed data to help debugging
             raise ValueError(
                 f"No posts found in feed {self.url}\n{json.dumps(feed_data, indent=2)}"
             )
