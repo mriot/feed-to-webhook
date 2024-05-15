@@ -77,10 +77,7 @@ class Feed(ABC):
             raise TypeError(f"Failed to extract posts from feed {self.url}")
 
         if not entries:
-            # TODO - this should be a custom error
-            raise ValueError(
-                f"No posts found in feed {self.url}\n{json.dumps(feed_data, indent=2)}"
-            )
+            raise ValueError(f"No posts found in feed {self.url}")
 
         self.feed_title: str = channel.get("title", "Untitled")
         self.feed_link: str = channel.get("link", "")
