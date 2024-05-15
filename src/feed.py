@@ -23,6 +23,7 @@ class Feed(ABC):
 
         self.etag: Optional[str] = None
         self.last_modified: Optional[str] = None
+        self.status_code: Optional[int] = None
 
         self.feed_title: str
         self.feed_link: str
@@ -37,18 +38,29 @@ class Feed(ABC):
             self.url, etag=etag, modified=last_modified
         )
 
+        if (code := feed_data.get("status")) and isinstance(code, int):
+            self.status_code = code
+
         # if the feed has not been modified since the last request, we can skip parsing it
-        if feed_data.get("status") == 304:  # 304 = Not Modified
-            print(f"Feed {self.url} has not been modified since the last request.")
+        if self.status_code == 304:  # 304 = Not Modified
             return False
 
-        # create a more comprehensive error message than the default one if something went wrong
+        # on a redirect, 'status' will contain the redirect code, not the final status code
+        # so we need to check manually if the feed has been modified
+        if self.status_code in (302, 301) and (etag or last_modified):  # Temp: 302 / Perm: 301
+            if etag and etag == feed_data.etag:
+                return False
+
+            if last_modified and feed_data.modified_parsed == dateutil.parser.parse(last_modified):
+                return False
+
+        # create a more informative message on parsing errors
         if feed_data.bozo and isinstance(feed_data.get("bozo_exception"), SAXParseException):
             raise ValueError(
                 f"Failed to parse feed {self.url} ({feed_data.get('status', 'is the path and file valid?')})"
             )
 
-        # update etag and last_modified if the feed provided new ones
+        # update etag and last_modified if the server provided new ones
         if (new_etag := feed_data.get("etag")) and isinstance(new_etag, str):
             self.etag = new_etag
 
