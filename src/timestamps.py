@@ -8,7 +8,7 @@ from file_handler import JsonFile
 
 class Timestamps:
     def __init__(self):
-        self._timestamps_file = JsonFile("feed_timestamps.json")
+        self._timestamps_file = JsonFile("timestamps.json")
         self._timestamps = self._timestamps_file.read() or {}
 
     def get(self, url):
