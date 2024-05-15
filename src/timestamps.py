@@ -22,6 +22,11 @@ class Timestamps:
 
         return parse(timestamp)
 
+    def remove_unconfigured_entries(self, feed_urls):
+        for url in list(self._timestamps.keys()):
+            if url not in feed_urls:
+                del self._timestamps[url]
+
     def update(self, url, timestamp):
         self._timestamps[url] = timestamp.isoformat()
 

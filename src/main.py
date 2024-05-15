@@ -20,6 +20,8 @@ def main():
     else:
         raise KeyError("Could not find the mandatory key 'feeds' in the config file.")
 
+    timestamps.remove_unconfigured_entries([feed.get("url") for feed in feeds])
+
     for feed_config in feeds:
         try:
             # -- start of config validation --
