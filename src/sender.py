@@ -19,7 +19,7 @@ class Sender:
         for feed in self.feeds:
             for embed in feed.generate_embeds():
                 embed_list.append({"embed": embed.build(), "feed": feed})
-        embed_list.sort(key=lambda x: x["feed"].latest_timestamp)
+        embed_list.sort(key=lambda x: x["feed"].last_post_date)
         return embed_list
 
     def send(self):
