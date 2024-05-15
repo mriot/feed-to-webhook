@@ -44,11 +44,17 @@ def main():
 
             feed = RssFeed(url, webhooks, feed_config.get("embed_color"))
 
+            if not feed.parse(
+                timestamps.get_etag(feed.url),
+                timestamps.get_last_modified(feed.url),
+            ):
+                continue  # skip feed if the server said it hasn't been modified
+
             # removes posts that are older than the last time we checked
-            feed.remove_old_posts(timestamps.get(feed.url))
+            feed.remove_old_posts(timestamps.get_last_post_date(feed.url))
 
             # always update - also ensures that new feeds are added to the timestamps file
-            timestamps.update(feed.url, feed.latest_timestamp)
+            timestamps.update(feed.url, feed.latest_timestamp, feed.etag, feed.last_modified)
 
             # skip feed if no new posts
             if not feed.posts:
