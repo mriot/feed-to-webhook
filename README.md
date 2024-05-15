@@ -8,9 +8,9 @@ Simple RSS feed aggregator for tiny servers like a Raspberry Pi, sending new pos
 
 > 📌 Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
 
-- Download this project, optionally create a [virtual environment](https://docs.python.org/3/library/venv.html) and run `pip install -r requirements.txt` to install dependencies  
+- Download this project, optionally create a [venv](https://docs.python.org/3/library/venv.html) and run `pip install -r requirements.txt` to install dependencies  
 - Edit `config.json` to add your feeds and [webhooks](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
-- Run `python3 src/main.py` to let it create the `feed_timestamps.json` file
+- Run `python src/main.py` to let it create the `timestamps.json` file
 - Check the console output for any errors
 - On a Raspberry Pi you can use `crontab -e` to create a cronjob  
   E.g. `*/15 * * * * python3 {path_to_project}/src/main.py` (*every 15th minute*)  
