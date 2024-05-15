@@ -36,18 +36,21 @@ Add the feeds you want to subscribe to along with one or more webhook urls to `c
 
 #### Example config
 
+> 📌 You can use C-style comments in the config. Both `//` and `/* */` are supported.
+
 ``` json
 {
-  "feeds": [
-    {
-      "url": "https://www.example.com/feed.rss",
-      "webhooks": [
-          "https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz"
-      ],
-      "embed_color": "BAD455"
-    },
-  ],
-  "error_webhook": "https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz"
+    "feeds": [
+        {
+            "url": "https://www.example.com/feed.rss",
+            "webhooks": [
+                "https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz",
+                "https://discord.com/api/webhooks/9876543210/acbdefghijklmnopqrstuvwxyz"
+            ],
+            "embed_color": "BAD455"
+        }
+    ],
+    "error_webhook": "https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz"
 }
 ```
 ---
