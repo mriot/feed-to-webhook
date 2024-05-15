@@ -30,7 +30,7 @@ class Feed(ABC):
         self.feed_avatar_url: str
 
         self.posts: list[Post]
-        self.latest_timestamp: datetime
+        self.last_post_date: datetime
 
     def parse(self, etag: Optional[str] = None, last_modified: Optional[str] = None) -> bool:
         feed_data: feedparser.FeedParserDict = feedparser.parse(
@@ -78,7 +78,7 @@ class Feed(ABC):
             self.feed_avatar_url = get_favicon_url(self.feed_link)
 
         self.posts: list[Post] = [Post(item) for item in entries[:25]]  # upper limit just in case
-        self.latest_timestamp: datetime = max((item.post_pub_date) for item in self.posts)
+        self.last_post_date: datetime = max((item.post_pub_date) for item in self.posts)
 
         return True
 

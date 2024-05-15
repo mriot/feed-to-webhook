@@ -54,7 +54,7 @@ def main():
             feed.remove_old_posts(timestamps.get_last_post_date(feed.url))
 
             # always update - also ensures that new feeds are added to the timestamps file
-            timestamps.update(feed.url, feed.latest_timestamp, feed.etag, feed.last_modified)
+            timestamps.update(feed.url, feed.last_post_date, feed.etag, feed.last_modified)
 
             # skip feed if no new posts
             if not feed.posts:
