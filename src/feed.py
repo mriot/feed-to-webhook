@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-import json
 from typing import Optional
 from xml.sax import SAXParseException
 import dateutil.parser
@@ -51,8 +50,10 @@ class Feed(ABC):
             if etag and etag == feed_data.etag:
                 return False
 
-            if last_modified and feed_data.modified_parsed == dateutil.parser.parse(last_modified):
-                return False
+            if (new_modified := feed_data.get("modified")) and isinstance(new_modified, str):
+                new_modified = dateutil.parser.parse(new_modified)
+                if last_modified and dateutil.parser.parse(last_modified) == new_modified:
+                    return False
 
         # create a more informative message on parsing errors
         if feed_data.bozo and isinstance(feed_data.get("bozo_exception"), SAXParseException):
@@ -64,8 +65,8 @@ class Feed(ABC):
         if (new_etag := feed_data.get("etag")) and isinstance(new_etag, str):
             self.etag = new_etag
 
-        elif (new_lm := feed_data.get("modified")) and isinstance(new_lm, str):
-            self.last_modified = new_lm
+        elif (new_modified := feed_data.get("modified")) and isinstance(new_modified, str):
+            self.last_modified = new_modified
 
         # extract feed data
         channel, entries = feed_data.get("feed"), feed_data.get("entries")
