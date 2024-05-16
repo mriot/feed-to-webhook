@@ -10,12 +10,7 @@ from utils import get_favicon_url
 
 
 class Feed(ABC):
-    def __init__(
-        self,
-        url: str,
-        webhooks: list[str],
-        embed_color: Optional[str] = None,
-    ):
+    def __init__(self, url: str, webhooks: list[str], embed_color: Optional[str] = None):
         self.url: str = url
         self.webhooks: list[str] = webhooks
         self.embed_color: int = int(embed_color if embed_color is not None else "738adb", 16)
@@ -37,6 +32,12 @@ class Feed(ABC):
         feed_data: feedparser.FeedParserDict = feedparser.parse(
             self.url, etag=etag, modified=last_modified
         )
+
+        # provide a more fitting error message if something went wrong
+        if feed_data.get("bozo") and isinstance(feed_data.get("bozo_exception"), SAXParseException):
+            raise ValueError(
+                f"Failed to parse feed {self.url} ({feed_data.get('status', 'is the path and file valid?')})"
+            )
 
         if (code := feed_data.get("status")) and isinstance(code, int):
             self.status_code = code
@@ -60,12 +61,6 @@ class Feed(ABC):
                 if last_modified and dateutil.parser.parse(last_modified) == new_modified:
                     return False
 
-        # create a more informative message on feed parsing errors
-        if feed_data.get("bozo") and isinstance(feed_data.get("bozo_exception"), SAXParseException):
-            raise ValueError(
-                f"Failed to parse feed {self.url} ({feed_data.get('status', 'is the path and file valid?')})"
-            )
-
         # update etag or last_modified if the server provided new ones
         if (new_etag := feed_data.get("etag")) and isinstance(new_etag, str):
             self.etag = new_etag
@@ -73,7 +68,8 @@ class Feed(ABC):
         elif (new_modified := feed_data.get("modified")) and isinstance(new_modified, str):
             self.last_modified = new_modified
 
-        # extract feed data
+        # --- extract feed data ---
+
         channel, entries = feed_data.get("feed"), feed_data.get("entries")
 
         if not isinstance(channel, dict):
