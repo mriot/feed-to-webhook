@@ -14,33 +14,18 @@ def main():
     timestamps = Timestamps()
     sender = Sender()
 
-    if feeds := config.get("feeds"):
-        if not isinstance(feeds, list):
-            raise TypeError("Key 'feeds' must be a list of feed objects.")
-    else:
-        raise KeyError("Could not find the mandatory key 'feeds' in the config file.")
+    if not (feeds := config.get("feeds")) or not isinstance(feeds, list):
+        raise TypeError("Key 'feeds' is required and must be a list of feed objects.")
 
     timestamps.remove_unconfigured_entries([feed.get("url") for feed in feeds])
 
     for feed_config in feeds:
         try:
-            # -- start of config validation --
-            if missing_keys := [key for key in ["url", "webhooks"] if key not in feed_config]:
-                raise FeedConfigError(f"{' and '.join(missing_keys)} not found", feed_config)
+            if not (url := feed_config.get("url")) or not isinstance(url, str):
+                raise FeedConfigError("Feed URL is not configured properly", feed_config)
 
-            if url := feed_config.get("url"):
-                if not isinstance(url, str):
-                    raise FeedConfigError("Feed URL must be a string", feed_config)
-            else:
-                raise FeedConfigError("No URL configured", feed_config)
-
-            if webhooks := feed_config.get("webhooks"):
-                if not isinstance(webhooks, list):
-                    raise FeedConfigError("Webhooks must be a list of URLs.", feed_config)
-            else:
-                raise FeedConfigError("No webhooks configured", feed_config)
-
-            # -- end of config validation --
+            if not (webhooks := feed_config.get("webhooks")) or not isinstance(webhooks, list):
+                raise FeedConfigError("Webhooks are not configured properly", feed_config)
 
             feed = RssFeed(url, webhooks, feed_config.get("embed_color"))
 
@@ -50,15 +35,13 @@ def main():
             ):
                 continue  # skip feed if the server said it hasn't been modified
 
-            # removes posts that are older than the last time we checked
             feed.remove_old_posts(timestamps.get_last_post_date(feed.url))
 
-            # always update - also ensures that new feeds are added to the timestamps file
+            # always update - ensures that new feeds are added to the timestamps file
             timestamps.update(feed.url, feed.last_post_date, feed.etag, feed.last_modified)
 
-            # skip feed if no new posts
             if not feed.posts:
-                continue
+                continue  # skip feed if no new posts are found
 
             sender.add(feed)
 
