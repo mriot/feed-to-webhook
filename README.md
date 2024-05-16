@@ -1,16 +1,24 @@
 # FTW - Feed to Webhook
 
-Simple RSS feed aggregator for tiny servers like a Raspberry Pi, sending new posts to Discord webhooks.
+This RSS feed aggregator is designed to run on a Raspberry Pi or a similar device, allowing you to monitor RSS feeds and send new posts to [Discord webhooks](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks). It's lightweight, easy to set up, and does not require a database whatsoever.
 
-<img src="https://github.com/mriot/feed-to-webhook/assets/24588573/ae48bf39-09c1-43ca-a0eb-cb59f5ebf4a5" height="400">
+The frequency of how often feeds are checked is set through a [cronjob](https://en.wikipedia.org/wiki/Cron) schedule, which can be adjusted to your liking.
+
+## Features
+
+- Flexible, can parse a wide range of feed types
+- [ETag and Last-Modified](https://feedparser.readthedocs.io/en/latest/http-etag.html) support to reduce bandwidth usage
+- Customizable embed colors for each feed
+- Optional error webhook to get notified of any issues
+- Does not consume any resources outside the scheduled checks
 
 ## Setup
 
 > 📌 Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
 
-- Download this project, optionally create a [venv](https://docs.python.org/3/library/venv.html) and run `pip install -r requirements.txt` to install dependencies  
-- Edit `config.json` to add your feeds and [webhooks](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
-- Run `python src/main.py` to let it create the `timestamps.json` file
+- Download this project and run `pip install -r requirements.txt` to install dependencies  
+- Edit `config.json` to add your feeds and webhooks
+- Run `python src/main.py` once to let it create a `timestamps.json` file
 - Check the console output for any errors
 - On a Raspberry Pi you can use `crontab -e` to create a cronjob  
   E.g. `*/15 * * * * python3 {path_to_project}/src/main.py` (*every 15th minute*)  
