@@ -60,13 +60,13 @@ class Feed(ABC):
                 if last_modified and dateutil.parser.parse(last_modified) == new_modified:
                     return False
 
-        # create a more informative message on parsing errors
-        if feed_data.bozo and isinstance(feed_data.get("bozo_exception"), SAXParseException):
+        # create a more informative message on feed parsing errors
+        if feed_data.get("bozo") and isinstance(feed_data.get("bozo_exception"), SAXParseException):
             raise ValueError(
                 f"Failed to parse feed {self.url} ({feed_data.get('status', 'is the path and file valid?')})"
             )
 
-        # update etag and last_modified if the server provided new ones
+        # update etag or last_modified if the server provided new ones
         if (new_etag := feed_data.get("etag")) and isinstance(new_etag, str):
             self.etag = new_etag
 
