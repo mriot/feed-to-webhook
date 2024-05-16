@@ -1,3 +1,4 @@
+from typing import Optional
 from bs4 import BeautifulSoup as bs
 from bs4.element import Tag
 
@@ -7,11 +8,11 @@ from feed import Feed
 
 
 class RssFeed(Feed):
-    def __init__(self, url, webhooks, embed_color):
+    def __init__(self, url: str, webhooks: list[str], embed_color: Optional[str] = None):
         super().__init__(url, webhooks, embed_color)
         self.new_embedded_posts: list[Embed] = []
 
-    def generate_embeds(self):
+    def generate_embeds(self) -> list[Embed]:
         for post in reversed(self.posts):
             desc_html = bs(post.post_description, "html.parser")
 

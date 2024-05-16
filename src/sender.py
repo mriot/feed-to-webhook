@@ -11,19 +11,19 @@ class Sender:
     def __init__(self):
         self.feeds: list[Feed] = []
 
-    def add(self, feed: Feed):
+    def add(self, feed: Feed) -> None:
         self.feeds.append(feed)
 
     def sort_embeds(self) -> list[dict]:
-        embed_list = []
+        embed_list: list[dict] = []
         for feed in self.feeds:
             for embed in feed.generate_embeds():
                 embed_list.append({"embed": embed.build(), "feed": feed})
         embed_list.sort(key=lambda x: x["feed"].last_post_date)
         return embed_list
 
-    def send(self):
-        MAX_RETRY_LIMIT = 3
+    def send(self) -> None:
+        MAX_RETRY_LIMIT: int = 3
 
         for sorted_embed in self.sort_embeds():
             for webhook in sorted_embed["feed"].webhooks:
@@ -65,6 +65,7 @@ class Sender:
                             json.dumps(res.json(), indent=2),
                         )
 
+                # catch any exceptions that might have occurred during the request
                 except WebhookHTTPError as wh_err:
                     handle_error_reporting(wh_err)
                     continue  # try the next webhook

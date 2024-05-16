@@ -22,7 +22,7 @@ def get_favicon_url(url: str) -> str:
 class FeedConfigError(Exception):
     """Exception raised for errors in the feed configuration."""
 
-    def __init__(self, title, feed_config):
+    def __init__(self, title: str, feed_config: dict):
         super().__init__(title)
         self.feed_config = feed_config
 
@@ -30,7 +30,7 @@ class FeedConfigError(Exception):
 class WebhookHTTPError(requests.HTTPError):
     """Exception raised for errors in the webhook HTTP response."""
 
-    def __init__(self, title, body, response):
+    def __init__(self, title: str, body: str, response: str):
         super().__init__(title)
         self.body = body
         self.response = response

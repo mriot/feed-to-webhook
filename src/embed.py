@@ -1,6 +1,7 @@
 from datetime import datetime
-from html2text import html2text
 from typing import Union
+
+from html2text import html2text
 
 
 class Embed:
