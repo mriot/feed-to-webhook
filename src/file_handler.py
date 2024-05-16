@@ -6,7 +6,7 @@ import jsonc
 class JsonFile:
     """Helper class for reading and writing JSON files in the project's root directory."""
 
-    def __init__(self, file_name, create=True):
+    def __init__(self, file_name: str, create: bool = True):
         self.file_path: str = path.join(path.dirname(path.realpath(__file__)), "..", file_name)
 
         if create and not path.exists(self.file_path):
@@ -17,9 +17,11 @@ class JsonFile:
         try:
             with open(self.file_path, "r", encoding="utf-8") as file:
                 return jsonc.load(file) or {}
+
         except jsonc.JSONDecodeError as e:
             print(f"Error parsing JSON file '{self.file_path}': {e}")
             sys.exit(1)
+
         except FileNotFoundError as e:
             print(f"File {e} not found")
             sys.exit(1)
