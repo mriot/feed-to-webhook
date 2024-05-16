@@ -1,5 +1,6 @@
 import time
 
+from exceptions import CustomBaseException, TitleException
 from file_handler import JsonFile
 from rss_feed import RssFeed
 from sender import Sender
@@ -59,6 +60,8 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
-    except Exception as err:
-        handle_error_reporting(err)
+        raise TitleException("Titeeeeeel")
+        # main()
+    except CustomBaseException as err:
+        # handle_error_reporting(err)
+        err.print()
