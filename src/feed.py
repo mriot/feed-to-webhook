@@ -23,6 +23,7 @@ class Feed(ABC):
         self.etag: Optional[str] = None
         self.last_modified: Optional[str] = None
         self.status_code: Optional[int] = None
+        self.redirected_url: str = self.url  # updated only if the feed has been redirected
 
         self.feed_title: str
         self.feed_link: str
@@ -46,8 +47,12 @@ class Feed(ABC):
 
         # on a redirect, 'status' will contain the redirect code, not the final status code
         # so we need to check manually if the feed has been modified
-        if self.status_code in (302, 301) and (etag or last_modified):  # Temp: 302 / Perm: 301
-            if etag and etag == feed_data.etag:
+        # Moved Permanently (301), Found (302), Temporary Redirect (307), Permanent Redirect (308)
+        if self.status_code in (301, 302, 307, 308) and (etag or last_modified):
+            if (new_url := feed_data.get("href")) and isinstance(new_url, str):
+                self.redirected_url = new_url
+
+            if etag and etag == feed_data.get("etag"):
                 return False
 
             if (new_modified := feed_data.get("modified")) and isinstance(new_modified, str):

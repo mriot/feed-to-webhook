@@ -35,11 +35,11 @@ class RssFeed(Feed):
                 if "video" in media.get("type"):
                     desc_html.append(bs(f"<p>{media.get('url')}</p>", "html.parser"))
 
-            # show a message if the feed has moved permanently
-            if self.status_code == 301:
+            # show a hint in the post if the feed has moved permanently
+            if self.status_code in (301, 308) and self.redirected_url:
                 desc_html.append(
                     bs(
-                        f"<p><i>This feed has permanently moved to {self.url} - please update the URL in the config</i></p>",
+                        f"<p><i>This feed has permanently moved to {self.redirected_url} - please update the URL in the config</i></p>",
                         "html.parser",
                     )
                 )
