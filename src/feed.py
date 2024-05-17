@@ -6,7 +6,7 @@ import dateutil.parser
 import feedparser
 
 from embed import Embed
-from utils import get_favicon_url
+from utils import NoItemsInFeedError, get_favicon_url
 
 
 class Feed(ABC):
@@ -79,7 +79,7 @@ class Feed(ABC):
             raise TypeError(f"Failed to extract posts from feed {self.url}")
 
         if not entries:
-            raise ValueError(f"No posts found in feed {self.url}")
+            raise NoItemsInFeedError(self.url, feed_data)
 
         self.feed_title: str = channel.get("title", "Untitled")
         self.feed_link: str = channel.get("link", "")
