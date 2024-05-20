@@ -8,8 +8,14 @@ from feed import Feed
 
 
 class RssFeed(Feed):
-    def __init__(self, url: str, webhooks: list[str], embed_color: Optional[str] = None):
-        super().__init__(url, webhooks, embed_color)
+    def __init__(
+        self,
+        url: str,
+        webhooks: list[str],
+        embed_color: Optional[str] = None,
+        icon_url: Optional[str] = None,
+    ):
+        super().__init__(url, webhooks, embed_color, icon_url)
         self.new_embedded_posts: list[Embed] = []
 
     def generate_embeds(self) -> list[Embed]:

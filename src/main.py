@@ -27,7 +27,12 @@ def main():
             if not (webhooks := feed_config.get("webhooks")) or not isinstance(webhooks, list):
                 raise FeedConfigError("Webhooks are not configured properly", feed_config)
 
-            feed = RssFeed(url, webhooks, feed_config.get("embed_color"))
+            feed = RssFeed(
+                url,
+                webhooks,
+                feed_config.get("embed_color"),
+                feed_config.get("icon_url"),
+            )
 
             if not feed.parse(
                 timestamps.get_etag(feed.url),
