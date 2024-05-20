@@ -27,6 +27,14 @@ class FeedConfigError(Exception):
         self.feed_config = feed_config
 
 
+class NoItemsInFeedError(Exception):
+    """Exception raised when no items are found in the feed."""
+
+    def __init__(self, title: str, feed_data: dict):
+        super().__init__(title)
+        self.feed_data = feed_data
+
+
 class WebhookHTTPError(requests.HTTPError):
     """Exception raised for errors in the webhook HTTP response."""
 
@@ -46,6 +54,9 @@ def handle_error_reporting(err: Exception) -> None:
 
     if isinstance(err, WebhookHTTPError):
         err_msg = f"{err.body} \n ```{err.response}``` \n {err_msg}"
+
+    if isinstance(err, NoItemsInFeedError):
+        err_msg = f"```{json.dumps(err.feed_data, indent=2)}``` \n {err_msg}"
 
     print(f"ERROR: {err}\n{err_msg}")
 

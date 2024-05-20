@@ -18,10 +18,13 @@ class RssFeed(Feed):
 
             # strip protocol from link-texts in the description - the actual link is kept as-is
             # (discord seems to not support markdown links if their name contains http or https)
+            # link.text concatenates the text from all child tags
+            # link.string replaces the inner text of the a-tag (also removes any child tags)
             for link in desc_html.find_all("a"):
-                # link.text concatenates the text from all child tags
-                # link.string replaces the inner text of the a-tag (also clears all child tags)
-                link.string = strip_protocol(link.text)
+                if link.text:
+                    link.string = strip_protocol(link.text)
+                else:
+                    link.string = strip_protocol(link.get("href", ""))
 
             # find the first image in the post and use it as the teaser image
             teaser_image_url = self._find_image(desc_html, post.post_media, post.post_content)
