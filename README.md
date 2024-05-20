@@ -64,6 +64,20 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 ```
 ---
 
+## Embed design
+
+Most embeds consist of an icon along with the feed's title, a heading to the article, some text, and an image. In the footer, you'll find the feed's source and the date of the article.
+
+- The icon typically comes from the feed itself (or defaults to the website's favicon), but you can override this in the config to use a custom icon.
+
+- If any images are found within the article, the first one will be used as the embed's image.
+
+### Example
+
+![example embed](https://github.com/mriot/feed-to-webhook/assets/24588573/2de472c9-1429-4119-bb74-a68a9ba93fbc)
+
+---
+
 ## Resources
 
 - Discord Webhooks guide <https://birdie0.github.io/discord-webhooks-guide/>
