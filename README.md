@@ -8,9 +8,9 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 
 - Flexible, can parse a wide range of feed types
 - [ETag and Last-Modified](https://feedparser.readthedocs.io/en/latest/http-etag.html) support to reduce bandwidth usage
-- Customizable embed colors for each feed
+- Customizable embed colors and icons for each feed
 - Optional error webhook to get notified of any issues
-- Does not consume any resources outside the scheduled checks
+- Does not consume any resources outside the scheduled runs
 
 ## Setup
 
@@ -26,15 +26,16 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 
 ## Config
 
-Add the feeds you want to subscribe to along with one or more webhook urls to `config.json`.  
-
 #### Feeds
 
-| Parameter     | Description                                       | Default                 |
-| ------------- | ------------------------------------------------- | ----------------------- |
-| `url`         | URL of the RSS feed.                              | -                       |
-| `webhooks`    | List of webhook URLs to which new posts are sent. | -                       |
-| `embed_color` | Color for Discord embed (hex code, without `#`).  | `738adb` (discord blue) |
+> 📌 Only `url` and `webhooks` are required.
+
+| Parameter     | Description                                           | Default                    |
+| ------------- | ----------------------------------------------------- | -------------------------- |
+| `url`         | URL of the RSS feed.                                  | -                          |
+| `webhooks`    | List of webhook URLs to which new posts are sent.     | -                          |
+| `embed_color` | Color for Discord embed (hex code, without `#`).      | `738ADB` (discord blue)    |
+| `icon_url`    | Alternative icon that will be displayed in the embed. | Usually the feed's favicon |
 
 #### Misc options
 
@@ -61,6 +62,20 @@ Add the feeds you want to subscribe to along with one or more webhook urls to `c
     "error_webhook": "https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz"
 }
 ```
+---
+
+## Embed design
+
+Most embeds consist of an icon along with the feed's title, a heading to the article, some text, and an image. In the footer, you'll find the feed's source and the date of the article.
+
+- The icon typically comes from the feed itself (or defaults to the website's favicon), but you can override this in the config to use a custom icon.
+
+- If any images are found within the article, the first one will be used as the embed's image.
+
+### Example
+
+![example embed](https://github.com/mriot/feed-to-webhook/assets/24588573/2de472c9-1429-4119-bb74-a68a9ba93fbc)
+
 ---
 
 ## Resources

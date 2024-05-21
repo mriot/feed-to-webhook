@@ -10,10 +10,17 @@ from utils import NoItemsInFeedError, get_favicon_url
 
 
 class Feed(ABC):
-    def __init__(self, url: str, webhooks: list[str], embed_color: Optional[str] = None):
+    def __init__(
+        self,
+        url: str,
+        webhooks: list[str],
+        embed_color: Optional[str] = None,
+        icon_url: Optional[str] = None,
+    ):
         self.url: str = url
         self.webhooks: list[str] = webhooks
         self.embed_color: int = int(embed_color if embed_color is not None else "738adb", 16)
+        self.icon_url: Optional[str] = icon_url
 
         self.etag: Optional[str] = None
         self.last_modified: Optional[str] = None
@@ -87,6 +94,8 @@ class Feed(ABC):
         self.feed_avatar_url: str = channel.get("image", {}).get("url")
         if not self.feed_avatar_url:
             self.feed_avatar_url = get_favicon_url(self.feed_link)
+        if self.icon_url:
+            self.feed_avatar_url = self.icon_url
 
         self.posts: list[Post] = [Post(item) for item in entries[:25]]  # upper limit just in case
         self.last_post_date: datetime = max((item.post_pub_date) for item in self.posts)
