@@ -1,11 +1,11 @@
 import time
 
-from exceptions import CustomBaseException, TitleException
+from exceptions import CustomBaseException, FeedConfigError
 from file_handler import JsonFile
 from rss_feed import RssFeed
 from sender import Sender
 from timestamps import Timestamps
-from utils import FeedConfigError, handle_error_reporting
+from utils import handle_error_reporting
 
 
 def main():
@@ -65,8 +65,9 @@ def main():
 
 if __name__ == "__main__":
     try:
-        raise TitleException("Titeeeeeel")
-        # main()
+        raise FeedConfigError("Feed URL is not configured properly", {"url": "https://example.com"})
+        main()
     except CustomBaseException as err:
-        # handle_error_reporting(err)
-        err.print()
+        err.handle()
+    except Exception as err:
+        pass  # TODO
