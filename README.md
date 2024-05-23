@@ -7,14 +7,15 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 ## Features
 
 - Flexible, can parse a wide range of feed types
-- [ETag and Last-Modified](https://feedparser.readthedocs.io/en/latest/http-etag.html) support to reduce bandwidth usage
+- Supports [ETag and Last-Modified](https://feedparser.readthedocs.io/en/latest/http-etag.html) headers
 - Customizable embed colors and icons for each feed
 - Optional error webhook to get notified of any issues
 - Does not consume any resources outside the scheduled runs
 
 ## Setup
 
-> 📌 Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
+> [!IMPORTANT]
+> Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
 
 - Download this project and run `pip install -r requirements.txt` to install dependencies  
 - Edit `config.json` to add your feeds and webhooks
@@ -28,7 +29,8 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 
 #### Feeds
 
-> 📌 Only `url` and `webhooks` are required.
+> [!NOTE]  
+> Only `url` and `webhooks` are required.
 
 | Parameter     | Description                                           | Default                    |
 | ------------- | ----------------------------------------------------- | -------------------------- |
@@ -45,7 +47,8 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 
 #### Example config
 
-> 📌 You can use C-style comments in the config. Both `//` and `/* */` are supported.
+> [!TIP]
+> You can use C-style comments in the config. Both `//` and `/* */` are supported.
 
 ``` json
 {
