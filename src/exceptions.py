@@ -45,7 +45,7 @@ class CustomBaseException(Exception):
                 "embeds": [
                     {
                         "title": f"ERROR: {self.title}",
-                        "description": f"{self.message}\n{self.tb_str}",
+                        "description": f"{self.message}\n\n{self.tb_str}",
                         "color": 16711680,
                     }
                 ]
@@ -65,10 +65,10 @@ class CustomBaseException(Exception):
 
 
 class FeedParseError(CustomBaseException):
-    def __init__(self, title: str, message: str, feed_data_attachment: str):
+    def __init__(self, title: str, message: str, feed_data: str):
         self.title = title
         self.message = message
-        self.feed_data = {"file": ("feed_data.xml", feed_data_attachment)}
+        self.feed_data = {"file": ("feed_data.xml", feed_data)}
         super().__init__(self.title, self.message, attachment=self.feed_data)
 
 
