@@ -19,31 +19,41 @@ logging.basicConfig(
 
 
 class CustomBaseException(Exception):
-    def __init__(self, title: str, body: Optional[str] = None, attachment: Optional[str] = None):
+    def __init__(self, title: str, message: str, attachment: Optional[dict] = None):
         self.title = title
-        self.body = body
-        self.attachment = attachment
+        self.message = message
+        self.attachment = attachment  # format: {"fileID": ("name.ext", str)}
 
         # Exclude the calls to extract_stack and this class to get the actual error origin
         self.tb = traceback.extract_stack()[:-2][-1]
-        self.tb_str = f"Raised in '{self.tb.filename}' on line {self.tb.lineno} in {self.tb.name}"
+        self.tb_str = f"Raised in '{self.tb.filename}' on line {self.tb.lineno} in '{self.tb.name}'"
+
+    def log(self, level=logging.WARNING):
+        """Log the error to the console and log file."""
+        self.print_to_console()
+        self.log_to_file(level=level)
+
+    def report(self):
+        """Report the error to the console, log file, and webhook."""
+        self.print_to_console()
+        self.log_to_file()
+        self.send_to_webhook()
 
     def print_to_console(self):
-        print(f"ERROR: {self.title}\n{self.body}\n{self.tb_str}")
+        print("=" * 25, self.title, self.message, self.tb_str, "=" * 25, sep="\n")
 
     def log_to_file(self, level=logging.ERROR):
-        logging.log(level, f"{self.title} - {self.tb_str}\nData: {self.body}")
+        logging.log(level, f"{self.title} - {self.message}\n{self.tb_str}")
 
     def send_to_webhook(self):
-        if errhook := JsonFile("config.json", False).read().get("error_webhook"):
-            headers = {
-                "Content-Type": "application/json" if not self.attachment else "multipart/form-data"
-            }
-            content = {
+        if not (errhook := JsonFile("config.json", False).read().get("error_webhook")):
+            logging.warning("Trying to send error to webhook, but no error webhook is configured.")
+        else:
+            payload = {
                 "embeds": [
                     {
                         "title": f"ERROR: {self.title}",
-                        "description": f"{self.body}\n{self.tb_str}",
+                        "description": f"{self.message}\n{self.tb_str}",
                         "color": 16711680,
                     }
                 ]
@@ -51,9 +61,8 @@ class CustomBaseException(Exception):
 
             res = requests.post(
                 errhook,
-                json=content,
-                headers=headers,
-                files=[("file", self.attachment)] if self.attachment else None,
+                data={"payload_json": json.dumps(payload)},
+                files=self.attachment if self.attachment else None,
                 timeout=10,
             )
 
@@ -61,29 +70,26 @@ class CustomBaseException(Exception):
                 logging.error(
                     f"Error webhook returned status code {res.status_code} ({res.reason})"
                 )
-        else:
-            logging.warning("Trying to send error to webhook, but no error webhook is configured.")
-
-    def handle(self):
-        self.print_to_console()
-        self.log_to_file()
-        self.send_to_webhook()
 
 
 class FeedParseError(CustomBaseException):
-    def __init__(self, title, feed_data):
-        self.feed_data = feed_data
-        super().__init__(title, attachment=feed_data)
+    def __init__(self, title: str, message: str, feed_data: str):
+        self.title = title
+        self.message = message
+        self.feed_data = {"file": ("feed_data.xml", feed_data)}
+        super().__init__(self.title, self.message, attachment=self.feed_data)
 
 
 class FeedConfigError(CustomBaseException):
-    def __init__(self, title, feed_config):
-        self.feed_config = feed_config
-        super().__init__(title, f"```{json.dumps(feed_config, indent=2)}```")
+    def __init__(self, title: str, feed_config: str):
+        self.title = title
+        self.feed_config = f"```{json.dumps(feed_config, indent=2)}```"
+        super().__init__(self.title, self.feed_config)
 
 
 class WebhookHTTPError(CustomBaseException):
-    def __init__(self, title, body, response):
-        self.body = body
-        self.response = response
-        super().__init__(title, f"{body}\n```{response}```")
+    def __init__(self, title: str, message: str, response: str):
+        self.title = title
+        self.message = message
+        self.response = f"```{response}```"
+        super().__init__(self.title, f"{self.message}\n{self.response}")
