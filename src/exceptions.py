@@ -9,6 +9,8 @@ from file_handler import JsonFile
 
 
 class CustomBaseException(Exception):
+    """Base class for custom exceptions that also handles logging and reporting."""
+
     def __init__(self, title: str, message: str, attachment: Optional[dict] = None):
         self.title = title
         self.message = message
@@ -20,22 +22,22 @@ class CustomBaseException(Exception):
 
     def log(self, level=logging.ERROR):
         """Log the error to the console and log file."""
-        self.print_to_console()
-        self.log_to_file(level=level)
+        self._print_to_console()
+        self._log_to_file(level=level)
 
     def report(self):
         """Report the error to the console, log file, and webhook."""
-        self.print_to_console()
-        self.log_to_file()
-        self.send_to_webhook()
+        self._print_to_console()
+        self._log_to_file()
+        self._send_to_webhook()
 
-    def print_to_console(self):
+    def _print_to_console(self):
         print("=" * 25, self.title, self.message, self.tb_str, "=" * 25, sep="\n")
 
-    def log_to_file(self, level=logging.ERROR):
+    def _log_to_file(self, level=logging.ERROR):
         logging.log(level, f"{self.title} - {self.message}\n{self.tb_str}")
 
-    def send_to_webhook(self):
+    def _send_to_webhook(self):
         if not (errhook := JsonFile("config.json", False).read().get("error_webhook")):
             logging.warning("Trying to send error to webhook, but no error webhook is configured.")
         else:
