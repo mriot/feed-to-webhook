@@ -1,21 +1,11 @@
 import json
 import logging
 import traceback
-from os import path
 from typing import Optional
 
 import requests
 
 from file_handler import JsonFile
-
-
-logging.basicConfig(
-    filename=path.join(path.dirname(path.realpath(__file__)), "../ftw.log"),
-    filemode="a",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO,
-)
 
 
 class CustomBaseException(Exception):

@@ -12,6 +12,7 @@ from file_handler import JsonFile
 from rss_feed import RssFeed
 from sender import Sender
 from timestamps import Timestamps
+from utils import setup_logging
 
 
 def main():
@@ -77,6 +78,7 @@ def main():
 
 if __name__ == "__main__":
     try:
+        setup_logging()
         main()
     except CustomBaseException as known_error:
         known_error.report()

@@ -1,5 +1,17 @@
+import logging
 import re
+from os import path
 from urllib.parse import urlparse
+
+
+def setup_logging():
+    logging.basicConfig(
+        filename=path.join(path.dirname(path.realpath(__file__)), "../ftw.log"),
+        filemode="a",
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.INFO,
+    )
 
 
 def strip_protocol(string: str) -> str:
