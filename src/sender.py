@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from exceptions import WebhookHTTPError
+from exceptions import WebhookHTTPError, WebhookRateLimitError
 from feed import Feed
 
 
@@ -50,8 +50,7 @@ class Sender:
                         # Check for any other error codes
                         if res.status_code >= 400:
                             raise WebhookHTTPError(
-                                title="Could not send embed",
-                                status=f"{res.status_code} ({res.reason})",
+                                title=f"Could not send message - {res.status_code} ({res.reason})",
                                 feed_url=sorted_embed["feed"].url,
                                 webhook_url=webhook,
                                 response=json.dumps(res.json(), indent=2),
@@ -62,13 +61,8 @@ class Sender:
                         ###########################################################
                     else:
                         # we could not make it past the rate limit for some reason
-                        raise WebhookHTTPError(
-                            title="Rate limit exceeded",
-                            status=f"{res.status_code} ({res.reason})",
-                            feed_url=sorted_embed["feed"].url,
-                            webhook_url=webhook,
-                            response=json.dumps(res.json(), indent=2),
-                            payload=json.dumps(sorted_embed["embed"], indent=2),
+                        raise WebhookRateLimitError(
+                            feed_url=sorted_embed["feed"].url, webhook_url=webhook
                         )
 
                 # catch any exceptions that might have occurred during the request

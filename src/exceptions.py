@@ -83,14 +83,12 @@ class WebhookHTTPError(CustomBaseException):
     def __init__(
         self,
         title: str,
-        status: str,
         feed_url: str,
         webhook_url: str,
-        response: Optional[str] = None,
+        response: str,
         payload: Optional[str] = None,
     ):
         self.title = title
-        self.status = status
         self.feed_url = feed_url
         self.webhook_url = webhook_url
         self.response = response
@@ -102,7 +100,21 @@ class WebhookHTTPError(CustomBaseException):
             f"Response: ```{self.response}```"
         )
 
-        super().__init__(f"{self.title} - {self.status}", message, attachment=self.payload)
+        super().__init__(self.title, message, attachment=self.payload)
+
+
+class WebhookRateLimitError(CustomBaseException):
+    def __init__(self, feed_url: str, webhook_url: str):
+        self.feed_url = feed_url
+        self.webhook_url = webhook_url
+
+        message = (
+            "Could not deliver the message even after multiple retries.\n\n"
+            f"Feed: {self.feed_url}\n"
+            f"Webhook: {self.webhook_url}"
+        )
+
+        super().__init__("Rate limit exceeded", message)
 
 
 class ConfigError(CustomBaseException):
