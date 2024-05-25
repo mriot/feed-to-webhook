@@ -6,7 +6,8 @@ import dateutil.parser
 import feedparser
 
 from embed import Embed
-from utils import NoItemsInFeedError, get_favicon_url
+from exceptions import FeedParseError, NoItemsInFeedError
+from utils import get_favicon_url
 
 
 class Feed(ABC):
@@ -42,8 +43,10 @@ class Feed(ABC):
 
         # provide a more fitting error message if something went wrong
         if feed_data.get("bozo") and isinstance(feed_data.get("bozo_exception"), SAXParseException):
-            raise ValueError(
-                f"Failed to parse feed {self.url} ({feed_data.get('status', 'is the path and file valid?')})"
+            raise FeedParseError(
+                f"Failed to parse feed ({feed_data.get('status', 'is the path and file valid?')})",
+                f"{self.url}\n{feed_data.get('bozo_exception')}",
+                str(feed_data),
             )
 
         if (code := feed_data.get("status")) and isinstance(code, int):
@@ -80,13 +83,13 @@ class Feed(ABC):
         channel, entries = feed_data.get("feed"), feed_data.get("entries")
 
         if not isinstance(channel, dict):
-            raise TypeError(f"Failed to extract feed data from {self.url}")
+            raise FeedParseError("Failed to extract feed data", self.url, str(feed_data))
 
         if not isinstance(entries, list):
-            raise TypeError(f"Failed to extract posts from feed {self.url}")
+            raise FeedParseError("Failed to extract posts", self.url, str(feed_data))
 
         if not entries:
-            raise NoItemsInFeedError(self.url, feed_data)
+            raise NoItemsInFeedError("No items in feed", self.url)
 
         self.feed_title: str = channel.get("title", "Untitled")
         self.feed_link: str = channel.get("link", "")

@@ -28,7 +28,7 @@ class CustomBaseException(Exception):
         self.tb = traceback.extract_stack()[:-2][-1]
         self.tb_str = f"Raised in '{self.tb.filename}' on line {self.tb.lineno} in '{self.tb.name}'"
 
-    def log(self, level=logging.WARNING):
+    def log(self, level=logging.ERROR):
         """Log the error to the console and log file."""
         self.print_to_console()
         self.log_to_file(level=level)
@@ -66,17 +66,17 @@ class CustomBaseException(Exception):
                 timeout=10,
             )
 
-            if res.status_code >= 300:
+            if res.status_code >= 400:
                 logging.error(
                     f"Error webhook returned status code {res.status_code} ({res.reason})"
                 )
 
 
 class FeedParseError(CustomBaseException):
-    def __init__(self, title: str, message: str, feed_data: str):
+    def __init__(self, title: str, message: str, feed_data_attachment: str):
         self.title = title
         self.message = message
-        self.feed_data = {"file": ("feed_data.xml", feed_data)}
+        self.feed_data = {"file": ("feed_data.xml", feed_data_attachment)}
         super().__init__(self.title, self.message, attachment=self.feed_data)
 
 
@@ -93,3 +93,17 @@ class WebhookHTTPError(CustomBaseException):
         self.message = message
         self.response = f"```{response}```"
         super().__init__(self.title, f"{self.message}\n{self.response}")
+
+
+class ConfigError(CustomBaseException):
+    def __init__(self, title: str, message: str):
+        self.title = title
+        self.message = message
+        super().__init__(self.title, self.message)
+
+
+class NoItemsInFeedError(CustomBaseException):
+    def __init__(self, title: str, message: str):
+        self.title = title
+        self.message = message
+        super().__init__(self.title, self.message)

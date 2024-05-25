@@ -3,8 +3,8 @@ import time
 
 import requests
 
+from exceptions import WebhookHTTPError
 from feed import Feed
-from utils import WebhookHTTPError, handle_error_reporting
 
 
 class Sender:
@@ -52,8 +52,9 @@ class Sender:
                             raise WebhookHTTPError(
                                 f"Status code {res.status_code} ({res.reason})",
                                 f"Feed: {sorted_embed['feed'].url}\n"
-                                f"Webhook: {webhook}\nResponse:",
-                                json.dumps(res.json(), indent=2),
+                                f"Webhook: {webhook}"
+                                f"Content: {json.dumps(sorted_embed['embed'], indent=2)}",
+                                "\nResponse:" + json.dumps(res.json(), indent=2),
                             )
 
                         break  # if we reach this point, the request was successful
@@ -66,6 +67,6 @@ class Sender:
                         )
 
                 # catch any exceptions that might have occurred during the request
-                except WebhookHTTPError as wh_err:
-                    handle_error_reporting(wh_err)
+                except WebhookHTTPError as err:
+                    err.report()
                     continue  # try the next webhook
