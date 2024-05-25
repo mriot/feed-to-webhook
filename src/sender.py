@@ -50,20 +50,25 @@ class Sender:
                         # Check for any other error codes
                         if res.status_code >= 400:
                             raise WebhookHTTPError(
-                                f"Status code {res.status_code} ({res.reason})",
-                                f"Feed: {sorted_embed['feed'].url}\n"
-                                f"Webhook: {webhook}"
-                                f"Content: {json.dumps(sorted_embed['embed'], indent=2)}",
-                                "\nResponse:" + json.dumps(res.json(), indent=2),
+                                title="Could not send embed",
+                                status=f"{res.status_code} ({res.reason})",
+                                feed_url=sorted_embed["feed"].url,
+                                webhook_url=webhook,
+                                response=json.dumps(res.json(), indent=2),
+                                payload=json.dumps(sorted_embed["embed"], indent=2),
                             )
 
                         break  # if we reach this point, the request was successful
+                        ###########################################################
                     else:
                         # we could not make it past the rate limit for some reason
                         raise WebhookHTTPError(
-                            f"Rate limit exceeded: {res.status_code} ({res.reason})",
-                            f"Feed: {sorted_embed['feed'].url}\n" f"Webhook: {webhook}",
-                            json.dumps(res.json(), indent=2),
+                            title="Rate limit exceeded",
+                            status=f"{res.status_code} ({res.reason})",
+                            feed_url=sorted_embed["feed"].url,
+                            webhook_url=webhook,
+                            response=json.dumps(res.json(), indent=2),
+                            payload=json.dumps(sorted_embed["embed"], indent=2),
                         )
 
                 # catch any exceptions that might have occurred during the request

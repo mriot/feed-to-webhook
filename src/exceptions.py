@@ -80,11 +80,29 @@ class FeedConfigError(CustomBaseException):
 
 
 class WebhookHTTPError(CustomBaseException):
-    def __init__(self, title: str, message: str, response: str):
+    def __init__(
+        self,
+        title: str,
+        status: str,
+        feed_url: str,
+        webhook_url: str,
+        response: Optional[str] = None,
+        payload: Optional[str] = None,
+    ):
         self.title = title
-        self.message = message
-        self.response = f"```{response}```"
-        super().__init__(self.title, f"{self.message}\n{self.response}")
+        self.status = status
+        self.feed_url = feed_url
+        self.webhook_url = webhook_url
+        self.response = response
+        self.payload = {"file": ("payload.json", payload)} if payload else None
+
+        message = (
+            f"Feed: {self.feed_url}\n"
+            f"Webhook: {self.webhook_url}\n\n"
+            f"Response: ```{self.response}```"
+        )
+
+        super().__init__(f"{self.title} - {self.status}", message, attachment=self.payload)
 
 
 class ConfigError(CustomBaseException):
