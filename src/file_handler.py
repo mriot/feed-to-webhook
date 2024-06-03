@@ -1,7 +1,8 @@
-import logging
 from os import path
 import sys
 import jsonc
+
+from utils import ErrorHandler
 
 
 class JsonFile:
@@ -20,13 +21,14 @@ class JsonFile:
                 return jsonc.load(file) or {}
 
         except jsonc.JSONDecodeError as e:
-            print(f"Error parsing JSON file '{self.file_path}': {e}")
-            logging.error(f"Error parsing JSON file '{self.file_path}': {e}")
+            ErrorHandler.log(
+                "JSON Decode Error",
+                f"Error parsing JSON file '{self.file_path}': {e}",
+            )
             sys.exit(1)
 
         except FileNotFoundError as e:
-            print(f"File {e} not found")
-            logging.error(f"File {e} not found")
+            ErrorHandler.log("File Not Found", f"File {e} not found")
             sys.exit(1)
 
     def write(self, data: dict) -> None:

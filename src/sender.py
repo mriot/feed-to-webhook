@@ -5,6 +5,7 @@ import requests
 
 from exceptions import WebhookHTTPError, WebhookRateLimitError
 from feed import Feed
+from utils import ErrorHandler
 
 
 class Sender:
@@ -67,5 +68,5 @@ class Sender:
 
                 # catch any exceptions that might have occurred during the request
                 except WebhookHTTPError as err:
-                    err.report()
+                    ErrorHandler.report(err.title, err.message, err.attachment)
                     continue  # try the next webhook

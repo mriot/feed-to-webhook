@@ -12,7 +12,7 @@ from file_handler import JsonFile
 from rss_feed import RssFeed
 from sender import Sender
 from timestamps import Timestamps
-from utils import setup_logging
+from utils import ErrorHandler, setup_logging
 
 
 def main():
@@ -62,10 +62,10 @@ def main():
             sender.add(feed)
 
         except FeedParseError as feed_error:
-            feed_error.report()
+            ErrorHandler.report(feed_error.title, feed_error.message, feed_error.attachment)
             continue
         except NoItemsInFeedError as no_items_error:
-            no_items_error.log(logging.WARNING)
+            ErrorHandler.log(no_items_error.title, no_items_error.message, level=logging.WARNING)
             continue
 
     sender.send()
@@ -81,6 +81,6 @@ if __name__ == "__main__":
         setup_logging()
         main()
     except CustomBaseException as known_error:
-        known_error.report()
+        ErrorHandler.report(known_error.title, known_error.message, known_error.attachment)
     except Exception as unknown_error:
-        logging.error(f"Unhandled exception: {unknown_error}")
+        ErrorHandler.report("Unknown Error", str(unknown_error), level=logging.CRITICAL)
