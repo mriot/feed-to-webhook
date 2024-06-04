@@ -8,8 +8,6 @@ from urllib.parse import urlparse
 
 import requests
 
-from file_handler import JsonFile
-
 
 def setup_logging():
     logging.basicConfig(
@@ -133,6 +131,8 @@ class ErrorHandler:
         tb_info: Optional[str] = None,
         attachment: Optional[WebhookAttachment] = None,
     ) -> None:
+
+        from file_handler import JsonFile
 
         tb_info = tb_info or ErrorHandler._get_traceback_string()
 
