@@ -11,11 +11,17 @@ class CustomBaseException(Exception):
         self.attachment = attachment
 
 
+class FeedFetchError(CustomBaseException):
+    def __init__(self, title: str, message: str):
+        self.title = title
+        self.message = message
+        super().__init__(self.title, self.message)
+
+
 class FeedParseError(CustomBaseException):
     def __init__(self, title: str, message: str, feed_data: str):
         self.title = title
         self.message = message
-        # TODO - handle different file types (json, xml)
         self.feed_data = WebhookAttachment("feed_data.xml", feed_data)
         super().__init__(self.title, self.message, attachment=self.feed_data)
 
