@@ -1,10 +1,18 @@
+import logging
 import time
 
+from exceptions import (
+    ConfigError,
+    CustomBaseException,
+    FeedConfigError,
+    FeedParseError,
+    NoItemsInFeedError,
+)
 from file_handler import JsonFile
 from rss_feed import RssFeed
 from sender import Sender
 from timestamps import Timestamps
-from utils import FeedConfigError, handle_error_reporting
+from utils import ErrorHandler, setup_logging
 
 
 def main():
@@ -15,7 +23,10 @@ def main():
     sender = Sender()
 
     if not (feeds := config.get("feeds")) or not isinstance(feeds, list):
-        raise TypeError("Key 'feeds' is required and must be a list of feed objects.")
+        raise ConfigError(
+            "Config format is incorrect",
+            "Key 'feeds' is required and must be a list of feed objects.",
+        )
 
     timestamps.remove_unconfigured_entries([feed.get("url") for feed in feeds])
 
@@ -50,9 +61,12 @@ def main():
 
             sender.add(feed)
 
-        # TODO - add more specific error handling
-        except Exception as feed_err:
-            handle_error_reporting(feed_err)
+        except FeedParseError as feed_error:
+            ErrorHandler.report(feed_error.title, feed_error.message, feed_error.attachment)
+            continue
+        except NoItemsInFeedError as no_items_error:
+            ErrorHandler.log(no_items_error.title, no_items_error.message, level=logging.WARNING)
+            continue
 
     sender.send()
 
@@ -64,6 +78,9 @@ def main():
 
 if __name__ == "__main__":
     try:
+        setup_logging()
         main()
-    except Exception as err:
-        handle_error_reporting(err)
+    except CustomBaseException as known_error:
+        ErrorHandler.report(known_error.title, known_error.message, known_error.attachment)
+    except Exception as unknown_error:
+        ErrorHandler.report("Unknown Error", str(unknown_error), level=logging.CRITICAL)

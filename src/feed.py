@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Optional
+from urllib.error import URLError
 from xml.sax import SAXParseException
 import dateutil.parser
 import feedparser
 
 from embed import Embed
-from utils import NoItemsInFeedError, get_favicon_url
+from exceptions import FeedFetchError, FeedParseError, NoItemsInFeedError
+from utils import get_favicon_url
 
 
 class Feed(ABC):
@@ -40,11 +42,20 @@ class Feed(ABC):
             self.url, etag=etag, modified=last_modified
         )
 
-        # provide a more fitting error message if something went wrong
-        if feed_data.get("bozo") and isinstance(feed_data.get("bozo_exception"), SAXParseException):
-            raise ValueError(
-                f"Failed to parse feed {self.url} ({feed_data.get('status', 'is the path and file valid?')})"
-            )
+        # we do not want to always stop here since the bozo bit can be set for many reasons that may not be critical
+        if feed_data.get("bozo"):
+            bozo_exception = feed_data.get("bozo_exception")
+
+            if isinstance(bozo_exception, URLError):
+                raise FeedFetchError(
+                    "Failed to fetch feed", f"Is the URL correct?\n{self.url}\n{bozo_exception}"
+                )
+
+            if isinstance(bozo_exception, SAXParseException):
+                raise FeedFetchError(
+                    f"Failed to parse feed ({feed_data.get('status', 'is the path and file valid?')})",
+                    f"{self.url}\n{bozo_exception}",
+                )
 
         if (code := feed_data.get("status")) and isinstance(code, int):
             self.status_code = code
@@ -80,13 +91,13 @@ class Feed(ABC):
         channel, entries = feed_data.get("feed"), feed_data.get("entries")
 
         if not isinstance(channel, dict):
-            raise TypeError(f"Failed to extract feed data from {self.url}")
+            raise FeedParseError("Failed to extract feed data", self.url, str(feed_data))
 
         if not isinstance(entries, list):
-            raise TypeError(f"Failed to extract posts from feed {self.url}")
+            raise FeedParseError("Failed to extract posts", self.url, str(feed_data))
 
         if not entries:
-            raise NoItemsInFeedError(self.url, feed_data)
+            raise NoItemsInFeedError("No items in feed", self.url)
 
         self.feed_title: str = channel.get("title", "Untitled")
         self.feed_link: str = channel.get("link", "")

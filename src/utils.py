@@ -1,14 +1,25 @@
 import json
+import logging
 import re
 import traceback
+from os import path
+from typing import Optional
 from urllib.parse import urlparse
 
 import requests
 
-from file_handler import JsonFile
+
+def setup_logging():
+    logging.basicConfig(
+        filename=path.join(path.dirname(path.realpath(__file__)), "../ftw.log"),
+        filemode="a",
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.INFO,
+    )
 
 
-def strip_protocol(string: str) -> str:
+def strip_protocol(string: str):
     """Removes all URL protocols from a string."""
     return re.sub(r"^[a-zA-Z]+://", "", string)
 
@@ -19,65 +30,132 @@ def get_favicon_url(url: str) -> str:
     return f"https://www.google.com/s2/favicons?domain={urlparse(url).hostname}&sz=128"
 
 
-class FeedConfigError(Exception):
-    """Exception raised for errors in the feed configuration."""
+class WebhookAttachment:
+    """
+    Utility class to create a webhook attachment.
 
-    def __init__(self, title: str, feed_config: dict):
-        super().__init__(title)
-        self.feed_config = feed_config
+    Methods:
+    - `to_dict()` returns the attachment in the format required by Discord.
 
+    Format: `{"fileID": ("name.ext", content)}`
+    """
 
-class NoItemsInFeedError(Exception):
-    """Exception raised when no items are found in the feed."""
+    def __init__(self, file_name: str, content: str):
+        self.file_id = file_name.split(".")[0]
+        self.name = file_name
+        self.content = content
 
-    def __init__(self, title: str, feed_data: dict):
-        super().__init__(title)
-        self.feed_data = feed_data
-
-
-class WebhookHTTPError(requests.HTTPError):
-    """Exception raised for errors in the webhook HTTP response."""
-
-    def __init__(self, title: str, body: str, response: str):
-        super().__init__(title)
-        self.body = body
-        self.response = response
+    def to_dict(self):
+        return {self.file_id: (self.name, self.content)}
 
 
-def handle_error_reporting(err: Exception) -> None:
-    """Handles error reporting and formatting."""
-    tb = traceback.TracebackException.from_exception(err).stack[-1]
-    err_msg = f"Error raised in '{tb.filename}' at line {tb.lineno} in function '{tb.name}'"
+class ErrorHandler:
+    """
+    Handles logging and reporting of errors.
 
-    if isinstance(err, FeedConfigError):
-        err_msg = f"```{json.dumps(err.feed_config, indent=2)}``` \n {err_msg}"
+    Methods:
+    - `report()` prints to console, logs to file, and sends to error webhook.
+    - `log()` prints to console and logs to file without sending to error webhook.
 
-    if isinstance(err, WebhookHTTPError):
-        err_msg = f"{err.body} \n ```{err.response}``` \n {err_msg}"
+    Private Methods (you can use them tho)
+    - `_get_traceback_string()` returns the traceback string of the error.
+    - `_log_to_console()` logs the error to the console.
+    - `_log_to_file()` logs the error to a file.
+    - `_send_to_error_webhook()` sends the error to an error webhook.
+    """
 
-    if isinstance(err, NoItemsInFeedError):
-        err_msg = f"```{json.dumps(err.feed_data, indent=2)}``` \n {err_msg}"
+    @staticmethod
+    def report(
+        title: str,
+        message: str,
+        attachment: Optional[WebhookAttachment] = None,
+        level: int = logging.ERROR,
+    ) -> None:
+        """
+        Print to console, log to file, and send to error webhook.
 
-    print(f"ERROR: {err}\n{err_msg}")
+        Args:
+        - `title` (str): The title of the error.
+        - `message` (str): The error message.
+        - `attachment` (optional WebhookAttachment): The attachment to include in the error report.
+        - `level` (int): The logging level for logging the error.
+        """
+        tb_info = ErrorHandler._get_traceback_string()
+        ErrorHandler._log_to_console(title, message, tb_info)
+        ErrorHandler._log_to_file(title, message, tb_info, level=level)
+        ErrorHandler._send_to_error_webhook(title, message, tb_info, attachment)
 
-    # also send the error to the error webhook if it is configured
-    if errhook := JsonFile("config.json", False).read().get("error_webhook"):
+    @staticmethod
+    def log(
+        title: str,
+        message: str,
+        level: int = logging.ERROR,
+    ) -> None:
+        """
+        Print to console and log to file without sending to error webhook.
+
+        Args:
+        - `title` (str): The title of the error.
+        - `message` (str): The error message.
+        - `level` (int): The logging level for logging the error.
+        """
+        tb_info = ErrorHandler._get_traceback_string()
+        ErrorHandler._log_to_console(title, message, tb_info)
+        ErrorHandler._log_to_file(title, message, tb_info, level=level)
+
+    @staticmethod
+    def _get_traceback_string() -> str:
+        tb = traceback.extract_stack()[:-2][-1]
+        return f"Raised in '{tb.filename}' on line {tb.lineno} in '{tb.name}'"
+
+    @staticmethod
+    def _log_to_console(title: str, message: str, tb_info: Optional[str] = None) -> None:
+        tb_info = tb_info or ErrorHandler._get_traceback_string()
+        print("=" * 25, title, message, tb_info, "=" * 25, sep="\n")
+
+    @staticmethod
+    def _log_to_file(
+        title: str,
+        message: str,
+        tb_info: Optional[str] = None,
+        level: int = logging.ERROR,
+    ) -> None:
+
+        tb_info = tb_info or ErrorHandler._get_traceback_string()
+        logging.log(level, f"{title} - {message}\n{tb_info}")
+
+    @staticmethod
+    def _send_to_error_webhook(
+        title: str,
+        message: str,
+        tb_info: Optional[str] = None,
+        attachment: Optional[WebhookAttachment] = None,
+    ) -> None:
+
+        from file_handler import JsonFile
+
+        tb_info = tb_info or ErrorHandler._get_traceback_string()
+
+        if not (errhook := JsonFile("config.json", False).read().get("error_webhook")):
+            logging.warning("Trying to send error to webhook, but no error webhook is configured.")
+            return
+
+        payload = {
+            "embeds": [
+                {
+                    "title": f"ERROR: {title}",
+                    "description": f"{message}\n\n{tb_info}",
+                    "color": 16711680,
+                }
+            ]
+        }
+
         res = requests.post(
             errhook,
-            json={
-                "embeds": [
-                    {
-                        "title": f"ERROR:  {err}",
-                        "description": err_msg,
-                        "color": 16711680,
-                    }
-                ]
-            },
-            headers={"Content-Type": "application/json"},
+            data={"payload_json": json.dumps(payload)},
+            files=attachment.to_dict() if attachment else None,
             timeout=10,
         )
 
-        if res.status_code >= 300:
-            print(f"Error webhook returned status code {res.status_code} ({res.reason})\n")
-    else:
-        print("Warning: No error webhook configured")
+        if res.status_code >= 400:
+            logging.error(f"Error webhook returned status code {res.status_code} ({res.reason})")

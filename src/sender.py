@@ -3,8 +3,9 @@ import time
 
 import requests
 
+from exceptions import WebhookHTTPError, WebhookRateLimitError
 from feed import Feed
-from utils import WebhookHTTPError, handle_error_reporting
+from utils import ErrorHandler
 
 
 class Sender:
@@ -50,22 +51,22 @@ class Sender:
                         # Check for any other error codes
                         if res.status_code >= 400:
                             raise WebhookHTTPError(
-                                f"Status code {res.status_code} ({res.reason})",
-                                f"Feed: {sorted_embed['feed'].url}\n"
-                                f"Webhook: {webhook}\nResponse:",
-                                json.dumps(res.json(), indent=2),
+                                title=f"Could not send message - {res.status_code} ({res.reason})",
+                                feed_url=sorted_embed["feed"].url,
+                                webhook_url=webhook,
+                                response=json.dumps(res.json(), indent=2),
+                                payload=json.dumps(sorted_embed["embed"], indent=2),
                             )
 
                         break  # if we reach this point, the request was successful
+                        ###########################################################
                     else:
                         # we could not make it past the rate limit for some reason
-                        raise WebhookHTTPError(
-                            f"Rate limit exceeded: {res.status_code} ({res.reason})",
-                            f"Feed: {sorted_embed['feed'].url}\n" f"Webhook: {webhook}",
-                            json.dumps(res.json(), indent=2),
+                        raise WebhookRateLimitError(
+                            feed_url=sorted_embed["feed"].url, webhook_url=webhook
                         )
 
                 # catch any exceptions that might have occurred during the request
-                except WebhookHTTPError as wh_err:
-                    handle_error_reporting(wh_err)
+                except WebhookHTTPError as err:
+                    ErrorHandler.report(err.title, err.message, err.attachment)
                     continue  # try the next webhook
