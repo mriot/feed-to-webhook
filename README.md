@@ -6,7 +6,7 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 
 ## Features
 
-- Flexible, can parse a wide range of feed types
+- Flexible, can parse a wide range of feed types (RSS, Atom, etc.)
 - Supports [ETag and Last-Modified](https://feedparser.readthedocs.io/en/latest/http-etag.html) headers
 - Customizable embed colors and icons for each feed
 - Optional error webhook to get notified of any issues
@@ -15,7 +15,7 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 ## Setup
 
 > [!IMPORTANT]
-> Made with Python 3.9 to ensure compatibility with most Raspberry Pis.
+> Runs on Python 3.9 to maximize compatibility with most Raspberry Pis.
 
 - Download this project and run `pip install -r requirements.txt` to install dependencies  
 - Edit `config.json` to add your feeds and webhooks
