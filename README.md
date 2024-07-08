@@ -59,7 +59,8 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
                 "https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz",
                 "https://discord.com/api/webhooks/9876543210/acbdefghijklmnopqrstuvwxyz"
             ],
-            "embed_color": "BAD455"
+            "embed_color": "BAD455",
+            "icon_url": "https://www.google.com/s2/favicons?domain=example.com"
         }
     ],
     "error_webhook": "https://discord.com/api/webhooks/0123456789/acbdefghijklmnopqrstuvwxyz"
@@ -72,6 +73,7 @@ The frequency of how often feeds are checked is set through a [cronjob](https://
 Most embeds consist of an icon along with the feed's title, a heading to the article, some text, and an image. In the footer, you'll find the feed's source and the date of the article.
 
 - The icon typically comes from the feed itself (or defaults to the website's favicon), but you can override this in the config to use a custom icon.
+  - To get almost any website's favicon, use `https://www.google.com/s2/favicons?domain=<domain>`.
 
 - If any images are found within the article, the first one will be used as the embed's image.
 
