@@ -8,7 +8,7 @@ dependencies = [
     "html2text==2020.1.16",
     "json-with-comments==1.2.6",
     "python-dateutil==2.8.2",
-    "requests==2.31.0",
+    "requests>=2.32.0",
 ]
 
 [tool.black]
